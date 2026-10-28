@@ -503,7 +503,7 @@ button,input,select,a{touch-action:manipulation}
       <div class="rechead">
         <div>
           <h2>What you entered</h2>
-          <p class="sub">Every save and removal on this phone. Undo puts the leave back the way it was.</p>
+          <p class="sub">Every save and removal on this phone. Undo sets the leave back to how it was before that change; later changes to the same leave are undone with it.</p>
         </div>
         <button class="btn alt sm" onclick="logPdf()">PDF</button>
       </div>
@@ -568,6 +568,20 @@ button,input,select,a{touch-action:manipulation}
     <div class="acts">
       <button class="btn" id="bulkSaveBtn" onclick="saveBulk()">Save for all</button>
       <button class="btn alt" onclick="closeBulk()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF ready: download or share -->
+<div class="shade hidden" id="pdfShade" onclick="if(event.target===this)closePdf()">
+  <div class="sheet" role="dialog" aria-label="PDF ready">
+    <h2>PDF ready</h2>
+    <div class="meta" id="pdfName"></div>
+    <div class="acts" style="flex-direction:column">
+      <button class="btn full" onclick="pdfDownload()">Download</button>
+      <button class="btn wa full" id="pdfShareBtn" onclick="pdfShare()">Share (WhatsApp, email…)</button>
+      <button class="btn alt full" onclick="pdfOpen()">Open / view</button>
+      <button class="btn alt full" onclick="closePdf()">Close</button>
     </div>
   </div>
 </div>
@@ -1757,21 +1771,46 @@ function table(doc, head, body, startY, extra){
   }, extra || {}));
   return doc.lastAutoTable.finalY;
 }
-async function sharePdf(doc, filename, title){
+// Every report PDF opens a small panel: Download, Share, or Open.
+let lastPdf = null;   // {blob, url, filename, title}
+function sharePdf(doc, filename, title){
   finishDoc(doc);
+  if(lastPdf && lastPdf.url) URL.revokeObjectURL(lastPdf.url);
   const blob = doc.output('blob');
-  const file = new File([blob], filename, {type: 'application/pdf'});
+  lastPdf = {blob, url: URL.createObjectURL(blob), filename, title};
+  let canShareFile = false;
+  try{ canShareFile = !!(navigator.canShare && navigator.canShare({files: [new File([blob], filename, {type: 'application/pdf'})]})); }catch(e){}
+  $('pdfName').textContent = filename;
+  $('pdfShareBtn').textContent = canShareFile ? 'Share (WhatsApp, email…)' : 'Share on WhatsApp (download first)';
+  $('pdfShade').classList.remove('hidden');
+}
+function closePdf(){ $('pdfShade').classList.add('hidden'); }
+function pdfDownload(){
+  if(!lastPdf) return;
+  const a = document.createElement('a');
+  a.href = lastPdf.url; a.download = lastPdf.filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('PDF saved to Downloads.');
+}
+async function pdfShare(){
+  if(!lastPdf) return;
+  const file = new File([lastPdf.blob], lastPdf.filename, {type: 'application/pdf'});
   try{
     if(navigator.canShare && navigator.canShare({files: [file]})){
-      await navigator.share({files: [file], title});
+      await navigator.share({files: [file], title: lastPdf.title});
+      closePdf();
       return;
     }
   }catch(e){ if(e && e.name === 'AbortError') return; }
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-  toast('PDF downloaded. Share it from your Downloads.');
+  // This browser cannot share files: save it, then open WhatsApp so it can be attached
+  pdfDownload();
+  toast('PDF saved. In WhatsApp tap 📎 > Document to attach it.');
+  setTimeout(() => window.open('https://wa.me/', '_blank'), 900);
+}
+function pdfOpen(){
+  if(!lastPdf) return;
+  const w = window.open(lastPdf.url, '_blank');
+  if(!w) pdfDownload();
 }
 function pdfReady(){
   if(window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.API.autoTable) return true;
@@ -1865,9 +1904,13 @@ function certificatePdf(){
 }
 
 /* ================= TODAY: log + undo ================= */
+// An undo writes its own log line (undoOf set). Those lines are bookkeeping only:
+// they are not shown, not counted and cannot be undone themselves.
 function dayOf(ts){ return isoOf(new Date(ts)); }
+function isActive(l){ return !l.undoOf && !l.undone; }
 function renderLogCount(){
-  const n = logs.filter(l => dayOf(l.at) === isoOf(new Date())).length;
+  const today = isoOf(new Date());
+  const n = logs.filter(l => isActive(l) && dayOf(l.at) === today).length;
   $('logCount').textContent = n; $('logCount').classList.toggle('hidden', !n);
 }
 function logState(l){
@@ -1879,44 +1922,63 @@ function logState(l){
 }
 function renderLog(){
   const day = $('logDay').value || isoOf(new Date());
-  const list = logs.map((l, i) => ({l, i})).filter(x => dayOf(x.l.at) === day).reverse();
-  $('logSum').textContent = list.length ? `${list.length} change${list.length === 1 ? '' : 's'} on ${niceDate(day)}` : '';
+  const list = logs.map((l, i) => ({l, i})).filter(x => !x.l.undoOf && dayOf(x.l.at) === day).reverse();
+  const active = list.filter(x => !x.l.undone).length, undone = list.length - active;
+  $('logSum').textContent = list.length
+    ? `${active} change${active === 1 ? '' : 's'} on ${niceDate(day)}` + (undone ? ` · ${undone} undone` : '') : '';
   if(!list.length){ $('logList').innerHTML = `<div class="recmsg">Nothing entered on this phone on ${esc(niceDate(day))}.</div>`; return; }
   $('logList').innerHTML = list.map(({l, i}) => `<div class="litem ${l.undone ? 'undone' : ''}">
     <time>${clock(l.at)}</time>
-    <div><b>${esc(l.student || l.enroll)}</b> · ${esc(l.month.slice(0,3))} ${l.undoOf ? '<span class="pill grey">undo</span>' : ''}
-      <small>${esc(l.classSec || '')} · ${esc(l.text)}${l.photos ? ` · ${l.photos} photo(s)` : ''}</small>${logState(l)}</div>
+    <div><b>${esc(l.student || l.enroll)}</b> · ${esc(l.month.slice(0,3))}
+      <small>${esc(l.classSec || '')} · ${esc(l.text)}${l.photos ? ` · ${l.photos} photo(s)` : ''}</small>${l.undone ? '' : logState(l)}</div>
     <div class="la">
       ${l.undone ? '<span class="pill grey">undone</span>' : `<button onclick="undoLog(${i})">Undo</button>`}
       <button onclick="openLog(${i})">Open</button>
     </div></div>`).join('');
 }
 function openLog(i){ const l = logs[i]; if(l) openFromAnywhere(l.enroll, l.month, {student: l.student, classSec: l.classSec}); }
+function sameLeave(a, b){
+  if(!a || !b) return !a && !b;
+  const t = x => String(x.leaveType || '').split(/\r?\n/)[0].trim().toLowerCase();
+  return String(a.leaves || '').trim() === String(b.leaves || '').trim() &&
+         t(a) === t(b) && String(a.datesK || '').trim() === String(b.datesK || '').trim();
+}
 async function undoLog(i){
-  const l = logs[i]; if(!l || l.undone) return;
+  const l = logs[i]; if(!l || !isActive(l)) return;
+  // this change + every later change of the same student and month are undone together
+  const chain = logs.filter((x, k) => k >= i && isActive(x) && x.enroll === l.enroll && x.month === l.month);
+  const later = chain.length - 1;
   const cur = recordOf(l.enroll, l.month);
   const s = studentObj(l.enroll, {student: l.student, classSec: l.classSec});
-  const what = l.prev ? `back to: ${l.prev.leaveType || 'Leave'}${l.prev.datesShort ? ' (' + l.prev.datesShort + ')' : ''}, ${l.prev.leaves || '-'} day(s)` : 'removed (there was no leave before)';
-  if(!confirm(`Undo this change for ${s.student || l.enroll} (${l.month})?\n\nThe ${l.month} leave will be ${what}.${l.photos ? '\nPhotos already uploaded stay in Drive.' : ''}`)) return;
+  const what = l.prev
+    ? `set back to: ${l.prev.leaveType || 'Leave'}${l.prev.datesShort ? ' (' + l.prev.datesShort + ')' : ''}, ${l.prev.leaves || '-'} day(s)`
+    : 'REMOVED (there was no leave before this change)';
+  const photosNote = chain.some(x => x.photos) ? '\nPhotos already uploaded stay in Drive.' : '';
+  if(!confirm(`Undo this change for ${s.student || l.enroll} (${l.month})?\n\nThe ${l.month} leave will be ${what}.` +
+    (later ? `\n${later} later change${later > 1 ? 's' : ''} to this leave will be undone too.` : '') + photosNote)) return;
+
   if(l.prev){
-    const pd = parseDates(l.prev.datesK);
-    await addOps([{type: 'save', enroll: l.enroll, month: l.month, student: s.student, father: s.father, classSec: s.classSec,
-      leaves: l.prev.leaves, leaveType: l.prev.leaveType || DEFAULT_TYPE,
-      datesFull: l.prev.datesK, datesShort: l.prev.datesK ? datesShortOf(pd) : (l.prev.datesShort || ''), photos: []}], {undoOf: l.id});
+    if(!sameLeave(cur, l.prev)){
+      const pd = parseDates(l.prev.datesK);
+      await addOps([{type: 'save', enroll: l.enroll, month: l.month, student: s.student, father: s.father, classSec: s.classSec,
+        leaves: l.prev.leaves, leaveType: l.prev.leaveType || DEFAULT_TYPE,
+        datesFull: l.prev.datesK, datesShort: l.prev.datesK ? datesShortOf(pd) : (l.prev.datesShort || ''), photos: []}], {undoOf: l.id});
+    }
   } else if(cur){
     await removeLeave(cur, l.month, {undoOf: l.id});
   }
   logs = (await kvGet('log')) || logs;
-  const li = logs.find(x => x.id === l.id); if(li) li.undone = true;
+  const ids = new Set(chain.map(x => x.id));
+  logs.forEach(x => { if(ids.has(x.id)) x.undone = true; });
   await kvSet('log', logs);
-  buzz(); toast('Undone.');
-  renderLog(); refreshViews();
+  buzz(); toast(l.prev ? 'Undone.' : 'Undone. Leave removed.');
+  renderLog(); renderLogCount(); refreshViews();
   if(student && student.enroll === l.enroll && month === l.month) pickMonth(month);
 }
 function logPdf(){
   if(!pdfReady()) return;
   const day = $('logDay').value || isoOf(new Date());
-  const list = logs.filter(l => dayOf(l.at) === day && !l.undone);
+  const list = logs.filter(l => dayOf(l.at) === day && isActive(l));
   const doc = newDoc('Leave Entries', `${niceDate(day)}  ·  ${list.length} change${list.length === 1 ? '' : 's'}`);
   table(doc, ['Time','Student','Class','Month','Change'], list.length ? list.map(l => [clock(l.at), l.student || l.enroll, l.classSec || '', l.month, l.text]) : [['', 'Nothing entered', '', '', '']]);
   sharePdf(doc, `Leave entries ${day}.pdf`, 'Leave entries');
