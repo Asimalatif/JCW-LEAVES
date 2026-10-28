@@ -378,7 +378,7 @@ const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","
 
 // data kept on the phone
 let students = [];        // [{enroll, student, father, classSec, nums:[]}]
-let contactLabels = [];
+let contactLabels = [], contactNote = '';
 let server = {};          // month -> rows as last downloaded from the sheets
 let queue = [];           // changes not yet in the sheets
 let me = {teacher:'', username:''};
@@ -447,7 +447,7 @@ async function boot(){
 
 async function loadLocal(){
   const st = (await kvGet('students')) || {labels:[], list:[]};
-  contactLabels = st.labels || [];
+  contactLabels = st.labels || []; contactNote = st.note || '';
   students = (st.list || []).map(r => ({enroll:r[0], student:r[1], father:r[2], classSec:r[3], nums:r[4] || []}));
   server = (await kvGet('months')) || {};
   queue = (await kvGet('queue')) || [];
@@ -527,7 +527,7 @@ async function downloadAll(){
   const r = await apiCall('data', {token, students: true, months: MONTHS}, 90000);
   if(!r.ok){ if(r.code === 'AUTH') await setAuthError(r.error); throw new Error(r.error || 'Download failed'); }
   await kvSet('students', r.students);
-  contactLabels = r.students.labels || [];
+  contactLabels = r.students.labels || []; contactNote = r.students.note || '';
   students = (r.students.list || []).map(x => ({enroll:x[0], student:x[1], father:x[2], classSec:x[3], nums:x[4] || []}));
   server = r.months || {};
   await kvSet('months', server);
@@ -1063,7 +1063,7 @@ function editRec(i){
 function renderContactsHint(){
   $('cList').innerHTML = '';
   if(!students.length) $('cCount').textContent = 'No student list on this phone yet.';
-  else if(!contactLabels.length) $('cCount').innerHTML = '<span class="err">No phone numbers were found in the student sheet. Ask the admin to set the contact columns in the script.</span>';
+  else if(!contactLabels.length || contactNote) $('cCount').innerHTML = `<span class="err">No phone numbers on this phone yet.${contactNote ? ' Reason from the server: ' + esc(contactNote) : ' The server has not sent any. Make sure the latest script version is deployed, then tap the status button and "Download latest from sheets".'}</span>`;
   else $('cCount').textContent = `${students.filter(s => s.nums.some(Boolean)).length} students have numbers saved on this phone.`;
   $('cFilters').classList.add('hidden');
 }

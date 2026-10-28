@@ -5,7 +5,7 @@
    ============================================================ */
 
 // Paste the URL of the API deployment (Execute as: Me, Who has access: Anyone)
-const API_URL = 'https://script.google.com/macros/s/AKfycbzbQMTB9Ltk2qGiREVeTogvSUH52jGyNi4wRT4qSvfq3BkOuD4IfN38CeC5YPE8jpkM/exec';
+const API_URL = 'PASTE_API_DEPLOYMENT_URL_HERE';
 
 const DB_NAME = 'jcw-leaves', DB_STORE = 'kv';
 let _db = null;
