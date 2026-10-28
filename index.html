@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d2540">
+<title>JCW Approved Leaves</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d2540;--navy2:#16385c;--bg:#f2f5fa;--card:#fff;--line:#dfe6f0;--muted:#62748a;--teal:#0fa597;--teal-d:#0b7d73;--amber:#ffb83d;--bad:#c62f3a;--good:#12804a;--wait:#b26a00;--r:16px;--sh:0 1px 2px rgba(13,37,64,.06),0 10px 28px -16px rgba(13,37,64,.28)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Manrope,'Segoe UI',Arial,sans-serif;color:#14243a;font-size:15px;line-height:1.5}
+h1,h2,h3,.num{font-family:'Bricolage Grotesque',Manrope,sans-serif}
+button{font-family:inherit;cursor:pointer}
+input,select{width:100%;padding:12px 14px;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:inherit;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,button:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(15,165,151,.18)}
+label,.lbl{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 6px}
+.hidden{display:none!important}
+.page{display:none}.page.active{display:block}
+.btn{border:none;border-radius:12px;padding:12px 20px;font-size:15px;font-weight:700;background:var(--teal);color:#fff;min-height:48px;transition:background .15s,transform .05s}
+.btn:hover{background:var(--teal-d)}.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.alt{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+.btn.alt:hover{background:#f2f5fa}
+.btn.full{width:100%}
+.btn.sm{min-height:40px;padding:8px 14px;font-size:14px}
+.req{color:var(--bad)}
+
+/* login */
+#loginPage.active{display:grid;grid-template-columns:1.1fr 1fr;min-height:100vh}
+.brand{background:var(--navy);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.brand:after{content:"";position:absolute;right:-120px;bottom:-120px;width:380px;height:380px;border-radius:50%;border:56px solid rgba(255,184,61,.16)}
+.brand .mark{width:46px;height:46px;border-radius:14px;background:var(--amber);color:var(--navy);display:grid;place-items:center;font:800 22px 'Bricolage Grotesque',sans-serif}
+.brand h1{font-size:clamp(34px,5vw,56px);line-height:1.02;margin:0 0 14px;font-weight:800;letter-spacing:-1px}
+.brand p{margin:0;max-width:340px;color:#b5c4d8}
+.signin{display:flex;align-items:center;justify-content:center;padding:32px}
+.signin .box{width:100%;max-width:360px}
+.signin h2{font-size:26px;margin:0 0 4px;color:var(--navy)}
+.signin p{margin:0 0 8px;color:var(--muted)}
+.loginmsg{margin-top:14px;font-size:14px;font-weight:700;min-height:21px}
+.relogin{background:#fff6e5;border:1.5px solid #f3d29a;color:#7a4b00;border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:600;margin:6px 0 4px}
+
+/* top bar */
+.top{background:#fff;border-bottom:1px solid var(--line);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:5}
+.top h1{margin:0;font-size:18px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:10px;min-width:0}
+.top h1:before{content:"J";flex:none;width:32px;height:32px;border-radius:10px;background:var(--navy);color:var(--amber);display:grid;place-items:center;font-size:16px}
+.top h1 small{font:500 12px Manrope,sans-serif;color:var(--muted);display:block;margin-top:-2px}
+.who{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--navy)}
+.who .out{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-weight:700;color:var(--navy)}
+.pillbtn{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--navy);white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--good);flex:none}
+.pillbtn.off .dot{background:#9aa8b8}.pillbtn.wait .dot{background:var(--amber)}.pillbtn.bad .dot{background:var(--bad)}
+.pillbtn.busy .dot{background:var(--teal);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+
+.banner{max-width:1080px;margin:12px auto 0;padding:0 16px}
+.banner .in{display:flex;gap:12px;align-items:center;justify-content:space-between;background:#fff6e5;border:1.5px solid #f3d29a;color:#7a4b00;border-radius:14px;padding:10px 14px;font-weight:700;font-size:14px}
+
+/* view tabs */
+.tabs{display:flex;gap:6px;max-width:1080px;margin:0 auto;padding:16px 16px 0}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 18px;font-weight:700;color:var(--navy);min-height:44px}
+.tab:hover{border-color:var(--teal)}
+.tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* entry layout */
+#entryView{display:grid;grid-template-columns:380px 1fr;gap:20px;max-width:1080px;margin:0 auto;padding:16px 16px 120px;align-items:start}
+.card{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--sh);margin-bottom:16px}
+.card h2{margin:0 0 4px;font-size:17px;color:var(--navy)}
+.card .sub{margin:0 0 6px;font-size:13px;color:var(--muted)}
+.find{position:sticky;top:76px}
+.searchrow{margin-top:10px}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+.count{font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 8px}
+#list{max-height:46vh;overflow:auto;margin:0 -6px;padding:0 6px}
+.item{display:flex;gap:12px;align-items:center;padding:10px;margin-bottom:4px;border:1.5px solid transparent;border-radius:12px;background:transparent;width:100%;text-align:left;font:inherit;color:inherit}
+.item:hover{background:#f2f5fa;border-color:var(--line)}
+.item b{display:block;font-weight:700;color:var(--navy)}.item small{color:var(--muted);font-size:12.5px}
+.av{flex:none;width:40px;height:40px;border-radius:12px;background:var(--navy);color:var(--amber);display:grid;place-items:center;font:800 14px 'Bricolage Grotesque',sans-serif}
+.empty{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:320px;border:2px dashed var(--line);border-radius:var(--r);color:var(--muted);padding:30px}
+.empty b{font:700 18px 'Bricolage Grotesque',sans-serif;color:var(--navy);margin-bottom:4px}
+#selected.hidden~.empty{display:flex}
+
+/* student + month */
+.stu{display:flex;gap:14px;align-items:center}
+.stu .av{width:52px;height:52px;font-size:18px;border-radius:16px}
+.stu h2{font-size:22px;margin:0}.stu small{color:var(--muted)}
+.stuacts{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.seg button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:11px 0;font-weight:700;font-size:14px;color:var(--navy);position:relative}
+.seg button:hover{border-color:var(--teal)}
+.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.seg button.has:after{content:"";position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--teal)}
+.bd{display:inline-block;margin-left:5px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--bg);color:var(--navy);font-size:11px;line-height:18px;vertical-align:1px}
+.seg button.on .bd{background:var(--amber)}
+
+/* type chips + dates */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:9px 15px;font-size:14px;font-weight:700;color:var(--navy)}
+.chip:hover{border-color:var(--teal)}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.other{margin-top:12px}
+input.invalid-field{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(198,47,58,.15)!important}
+.dchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.dchip{display:inline-flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:10px;background:#e8f7f5;color:var(--teal-d);font-size:13.5px;font-weight:700}
+.dchip button{width:24px;height:24px;border-radius:8px;border:none;background:#fff;color:var(--bad);font-weight:800;padding:0}
+
+/* ticket: the leave count */
+.slip{display:flex;align-items:stretch;margin-top:18px;background:var(--navy);color:#fff;border-radius:16px;position:relative}
+.slip:before,.slip:after{content:"";position:absolute;left:112px;width:20px;height:20px;border-radius:50%;background:var(--card);margin-left:-10px}
+.slip:before{top:-10px}.slip:after{bottom:-10px}
+.slip .num{width:112px;flex:none;display:grid;place-items:center;font-size:52px;font-weight:800;color:var(--amber);border-right:2px dashed rgba(255,255,255,.25);padding:16px 0}
+.slip .num.dim{color:rgba(255,255,255,.3)}
+.slip .txt{flex:1;padding:16px 18px;min-width:0}
+.slip .txt b{display:block;font-size:15px}.slip .txt small{color:#b5c4d8;font-size:12.5px;display:block}
+.slip .req{color:#ff8a92}
+.slip input{margin-top:10px;max-width:200px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff}
+.slip input::placeholder{color:rgba(255,255,255,.5)}
+
+/* records view */
+#recordsView,#contactsView{max-width:1080px;margin:0 auto;padding:16px 16px 60px}
+.rechead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.recfilters{display:grid;grid-template-columns:1fr 200px;gap:10px;margin-top:14px}
+.recfilters input,.recfilters select{padding:10px 14px}
+.recsum{font-size:13px;font-weight:700;color:var(--muted);margin:16px 0 4px;min-height:20px}
+.reclist{margin:0 -8px}
+.rec{display:grid;grid-template-columns:44px minmax(0,1.4fr) minmax(0,1.4fr) 60px auto;grid-template-areas:"av who info num act";gap:12px;align-items:center;padding:12px 8px;border-top:1px solid var(--line)}
+.rec .av{grid-area:av;width:44px;height:44px}
+.rec .who2{grid-area:who;min-width:0}
+.rec .who2 b{display:block;font-weight:700;color:var(--navy);overflow-wrap:anywhere}
+.rec .who2 small,.rec .info small{display:block;color:var(--muted);font-size:12.5px}
+.rec .info{grid-area:info;min-width:0}
+.pill{display:inline-block;padding:3px 10px;border-radius:8px;background:#e8f7f5;color:var(--teal-d);font-size:13px;font-weight:700;margin-bottom:2px}
+.pill.wait{background:#fff1d6;color:var(--wait)}
+.rec .rnum{grid-area:num;font:800 26px 'Bricolage Grotesque',sans-serif;color:var(--navy);text-align:center}
+.rec .rnum.none{color:var(--line)}
+.rec .act{grid-area:act;display:flex;gap:8px;justify-content:flex-end}
+.rec .act button{height:38px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:700;color:var(--navy);padding:0 14px}
+.rec .act button:hover{background:var(--bg)}
+.rec .act .x{width:38px;padding:0;color:var(--bad);font-size:20px;line-height:1}
+.rec .act .x:hover{background:var(--bad);border-color:var(--bad);color:#fff}
+.recmsg{padding:36px 10px;text-align:center;color:var(--muted);border-top:1px solid var(--line)}
+.recstatus{font-size:14px;font-weight:700;margin-top:12px;min-height:21px}
+
+/* contacts */
+.ccard{border-top:1px solid var(--line);padding:14px 4px}
+.ccard .hd{display:flex;gap:12px;align-items:center}
+.ccard .hd b{display:block;color:var(--navy);font-weight:700}.ccard .hd small{color:var(--muted);font-size:12.5px}
+.nums{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.numrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);border-radius:12px;padding:8px 10px}
+.numrow .lab{font-size:12px;font-weight:700;color:var(--muted);width:100%}
+.numrow .n{font:700 18px 'Bricolage Grotesque',sans-serif;color:var(--navy);letter-spacing:.3px;width:100%}
+.numrow a,.numrow button{flex:1;display:inline-flex;align-items:center;justify-content:center;height:40px;min-width:44px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:14px;color:var(--navy);text-decoration:none}
+.numrow a.wa{background:#1fa855;border-color:#1fa855;color:#fff}
+.nonum{margin-top:8px;font-size:13px;color:var(--muted)}
+.cshare{margin-top:8px}
+
+/* save bar */
+.savebar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));z-index:6}
+.savebar .in{max-width:1080px;margin:0 auto;display:flex;gap:14px;align-items:center;justify-content:flex-end}
+.status{flex:1;font-size:14px;font-weight:700;min-width:0}
+.ok{color:var(--good)}.err{color:var(--bad)}.info{color:var(--muted);font-weight:600}.waitc{color:var(--wait)}
+
+/* sync sheet */
+.shade{position:fixed;inset:0;background:rgba(13,37,64,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;width:100%;max-width:560px;max-height:86vh;overflow:auto;border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet h2{margin:0 0 4px;color:var(--navy);font-size:20px}
+.sheet .meta{font-size:13px;color:var(--muted);margin-bottom:12px}
+.sheet .acts{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.qitem{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14px}
+.qitem b{color:var(--navy)}.qitem small{display:block;color:var(--muted)}
+.qitem.failed{border-color:#f0b4b9;background:#fff5f6}
+.qitem .e{color:var(--bad);font-weight:700;font-size:13px;margin-top:4px}
+.qitem .qa{display:flex;gap:8px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;z-index:30;max-width:90vw;text-align:center;box-shadow:var(--sh)}
+
+@media(max-width:820px){
+  #loginPage.active{grid-template-columns:1fr;min-height:auto}
+  .brand{padding:28px 24px 32px}.brand h1{font-size:34px}.brand:after{display:none}
+  #entryView{grid-template-columns:1fr;padding:12px 12px 110px;gap:0}
+  .tabs{padding:12px 12px 0}.tab{flex:1;padding:10px 4px;font-size:14px}
+  #recordsView,#contactsView{padding:12px 12px 40px}
+  .find{position:static}
+  #list{max-height:none}
+  .empty{display:none!important}
+  .top{padding-left:12px;padding-right:12px}.top h1{font-size:16px}.top h1 small{display:none}
+  .slip .num{width:92px;font-size:42px}.slip:before,.slip:after{left:92px}
+  .row.stack{flex-direction:column}
+  .recfilters{grid-template-columns:1fr}
+  .rec{grid-template-columns:44px minmax(0,1fr) auto;grid-template-areas:"av who num" "av info info" "av act act"}
+  .rec .act{justify-content:flex-start}
+  .seg button,.chip,.btn{min-height:48px}
+  .chip{padding:11px 16px}
+  .dchip{font-size:14px;padding-left:14px}.dchip button{width:32px;height:32px}
+  .card{padding:16px}
+  .status{font-size:13px;line-height:1.3}
+  .savebar .in{gap:10px}.savebar .btn{min-width:124px}
+  .seg button{padding:11px 0;font-size:13px}.bd{margin-left:3px;padding:0 4px}
+  .rec .act button{height:44px}.rec .act .x{width:44px}
+  .stu{flex-wrap:wrap}.stuacts{margin-left:0;width:100%;justify-content:flex-start}
+}
+@media(max-width:420px){.row.dates{flex-direction:column;gap:0}.top h1>span{display:none}.who .out{padding:7px 10px}}
+button,input,select,a{touch-action:manipulation}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div class="top hidden" id="top">
+  <h1><span>Approved Leaves<small>September to January</small></span></h1>
+  <div class="who">
+    <button class="pillbtn" id="syncPill" onclick="openSync()"><span class="dot"></span><span class="pt" id="syncText">Online</span></button>
+    <button class="out" onclick="logout()">Log out</button>
+  </div>
+</div>
+
+<div id="loginPage" class="page active">
+  <div class="brand">
+    <div class="mark">J</div>
+    <div><h1>Approved<br>Leaves</h1><p>Works without internet. Leaves you save are kept on this phone and reach the sheets as soon as you are online.</p></div>
+  </div>
+  <div class="signin"><div class="box">
+    <h2>Sign in</h2><p>For Admin and Leave In-Charge.</p>
+    <div id="reloginNote" class="relogin hidden"></div>
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" autocapitalize="off">
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+    <button class="btn full" id="loginBtn" style="margin-top:20px" onclick="login()">Sign in</button>
+    <div class="loginmsg" id="loginMsg"></div>
+  </div></div>
+</div>
+
+<div id="mainPage" class="page">
+  <div class="banner hidden" id="authBanner"><div class="in"><span id="authText"></span><button class="btn sm" onclick="startRelogin()">Sign in</button></div></div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabEntry" onclick="setView('entry')">Enter leave</button>
+    <button class="tab" id="tabRecords" onclick="setView('records')">Records</button>
+    <button class="tab" id="tabContacts" onclick="setView('contacts')">Contacts</button>
+  </div>
+
+  <!-- ===== ENTER LEAVE ===== -->
+  <div id="entryView">
+    <div>
+      <div class="card find" id="findCard">
+        <h2>Find a student</h2>
+        <p class="sub">Type a name or enrollment number. Works offline.</p>
+        <div class="searchrow">
+          <input id="q" type="search" placeholder="e.g. Ayesha or 1042" oninput="debounce(search)" enterkeyhint="search">
+        </div>
+        <div id="filters" class="row stack hidden">
+          <div><label for="fFather">Father name</label><input id="fFather" type="text" oninput="renderList()"></div>
+          <div><label for="fClass">Class-section</label><select id="fClass" onchange="renderList()"></select></div>
+        </div>
+        <div id="count" class="count"></div>
+        <div id="list"></div>
+      </div>
+    </div>
+
+    <div>
+      <div id="selected" class="hidden">
+        <div class="card">
+          <div class="stu"><div class="av" id="sAv"></div>
+            <div><h2 id="sName"></h2><small id="sMeta"></small></div>
+            <div class="stuacts">
+              <button class="btn alt sm" onclick="contactOfSelected()">Contact</button>
+              <button class="btn alt sm" onclick="changeStudent()">Change</button>
+            </div>
+          </div>
+          <div class="lbl" style="margin-top:18px">Month</div>
+          <div class="seg" id="months"></div>
+        </div>
+
+        <div id="form" class="hidden">
+          <div class="card">
+            <h2>Leave type <span class="req">*</span></h2>
+            <div class="chips" id="types"></div>
+            <div id="otherBox" class="other hidden">
+              <input id="lother" type="text" placeholder="Type the leave type, e.g. Brother's wedding" oninput="this.classList.remove('invalid-field')">
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Dates and count</h2>
+            <p class="sub">Dates are optional. Pick From and To and the count updates at once.</p>
+            <div class="row dates">
+              <div><div class="lbl" style="margin-top:6px">From</div><input id="dFrom" type="date" onchange="rangeChanged('from')"></div>
+              <div><div class="lbl" style="margin-top:6px">To (blank = one day)</div><input id="dTo" type="date" onchange="rangeChanged('to')"></div>
+            </div>
+            <button class="btn alt hidden" id="moreBtn" type="button" style="margin-top:12px" onclick="newRange()">Add another range</button>
+            <div class="dchips" id="dchips"></div>
+
+            <div class="slip">
+              <div class="num" id="slipNum">0</div>
+              <div class="txt">
+                <b id="slipTitle">Approved leaves</b>
+                <small id="slipNote"></small>
+                <input id="leaves" type="text" inputmode="decimal" oninput="onManual()">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="empty"><b>Pick a student</b>Search on the left, then choose a student to enter leave.</div>
+    </div>
+  </div>
+
+  <!-- ===== RECORDS ===== -->
+  <div id="recordsView" class="hidden">
+    <div class="card">
+      <div class="rechead">
+        <div>
+          <h2>Marked leaves, month by month</h2>
+          <p class="sub">Every approved leave for the month. Orange ones are on this phone and not yet in the sheet.</p>
+        </div>
+        <button class="btn alt sm" onclick="refreshRecMonth()">Refresh</button>
+      </div>
+      <div class="seg" id="recMonths" style="margin-top:12px"></div>
+      <div class="recfilters">
+        <input id="rq" type="search" placeholder="Filter by name, father or enrollment number" oninput="renderRecords()">
+        <select id="rClass" onchange="renderRecords()"></select>
+      </div>
+      <div class="recstatus" id="recStatus"></div>
+      <div class="recsum" id="recSum"></div>
+      <div class="reclist" id="recList"></div>
+    </div>
+  </div>
+
+  <!-- ===== CONTACTS ===== -->
+  <div id="contactsView" class="hidden">
+    <div class="card">
+      <h2>Student contacts</h2>
+      <p class="sub">Search by name, father name or enrollment number. Tap to call, WhatsApp or copy.</p>
+      <div class="searchrow"><input id="cq" type="search" placeholder="e.g. Ayesha, Khan or 1042" oninput="debounce(searchContacts)" enterkeyhint="search"></div>
+      <div id="cFilters" class="row stack hidden">
+        <div><label for="cClass">Class-section</label><select id="cClass" onchange="renderContacts()"></select></div>
+      </div>
+      <div class="count" id="cCount"></div>
+      <div id="cList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="savebar hidden" id="savebar">
+  <div class="in">
+    <div class="status" id="status"></div>
+    <button class="btn" id="saveBtn" onclick="save()" disabled>Save leave</button>
+  </div>
+</div>
+
+<!-- sync panel -->
+<div class="shade hidden" id="syncShade" onclick="if(event.target===this)closeSync()">
+  <div class="sheet" role="dialog" aria-label="Sync">
+    <h2>Saving to the sheets</h2>
+    <div class="meta" id="syncMeta"></div>
+    <div class="acts">
+      <button class="btn sm" id="sendNowBtn" onclick="sendNow()">Send now</button>
+      <button class="btn alt sm" onclick="downloadLatest()">Download latest from sheets</button>
+      <button class="btn alt sm hidden" id="notifyBtn" onclick="askNotify()">Notify me when sent</button>
+    </div>
+    <div id="qList"></div>
+    <button class="btn alt full" style="margin-top:8px" onclick="closeSync()">Close</button>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script src="sync.js"></script>
+<script>
+const MONTHS = ["September","October","November","December","January"];
+const TYPES = ["Medical Leave","Casual Leave","Sick Leave","Emergency Leave","Personal Leave","Improvement Leave","Family Wedding"];
+const NO_NUMBER = ["Emergency Leave","Sick Leave"];
+const DEFAULT_TYPE = "Medical Leave";
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// data kept on the phone
+let students = [];        // [{enroll, student, father, classSec, nums:[]}]
+let contactLabels = [];
+let server = {};          // month -> rows as last downloaded from the sheets
+let queue = [];           // changes not yet in the sheets
+let me = {teacher:'', username:''};
+let dataAt = 0, lastSync = 0;
+let syncing = false, syncErr = '', authErr = '';
+
+let results = [], student = null, month = null;
+let dates = [];        // [{iso, label}]
+let typ = DEFAULT_TYPE;
+let manual = '';
+let view = 'entry';
+let recMonth = null, recRows = [];
+let cResults = [];
+
+const $ = id => document.getElementById(id);
+const esc = v => String(v == null ? "" : v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+let _deb = null;
+function debounce(fn){ clearTimeout(_deb); _deb = setTimeout(fn, 160); }
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.remove('hidden'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.add('hidden'), 2600); }
+function buzz(){ try{ navigator.vibrate && navigator.vibrate(25); }catch(e){} }
+function ago(ts){
+  if(!ts) return 'never';
+  const s = Math.round((Date.now() - ts) / 1000);
+  if(s < 60) return 'just now';
+  if(s < 3600) return Math.round(s/60) + ' min ago';
+  if(s < 86400) return Math.round(s/3600) + ' h ago';
+  return new Date(ts).toLocaleDateString();
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  $(id).classList.add('active');
+  const inMain = id === 'mainPage';
+  $('top').classList.toggle('hidden', !inMain);
+  if(!inMain) $('savebar').classList.add('hidden');
+}
+function setStatus(msg, cls){ const s = $('status'); s.className = 'status ' + (cls || ''); s.textContent = msg || ''; }
+function syncSavebar(){
+  const show = view === 'entry' && student && month && !$('selected').classList.contains('hidden');
+  $('savebar').classList.toggle('hidden', !show);
+}
+
+/* ================= START-UP ================= */
+async function boot(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.addEventListener('message', ev => {
+      if(ev.data && ev.data.type === 'synced') afterSync({sent: ev.data.sent, failed: ev.data.failed, sentOps: []}, true);
+    });
+  }
+  window.addEventListener('online', () => { renderSyncPill(); trySync(); });
+  window.addEventListener('offline', renderSyncPill);
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') trySync(); });
+
+  try{
+    const token = await kvGet('token');
+    if(!token) return;
+    await loadLocal();
+    $('welcome') && ($('welcome').textContent = me.teacher);
+    showPage('mainPage'); setView('entry');
+    renderAuth();
+    trySync();
+    if(navigator.onLine && Date.now() - dataAt > 5 * 60000) downloadLatest(true);
+  }catch(e){ console.error(e); }
+}
+
+async function loadLocal(){
+  const st = (await kvGet('students')) || {labels:[], list:[]};
+  contactLabels = st.labels || [];
+  students = (st.list || []).map(r => ({enroll:r[0], student:r[1], father:r[2], classSec:r[3], nums:r[4] || []}));
+  server = (await kvGet('months')) || {};
+  queue = (await kvGet('queue')) || [];
+  me = (await kvGet('me')) || me;
+  dataAt = (await kvGet('dataAt')) || 0;
+  lastSync = (await kvGet('lastSync')) || 0;
+  authErr = (await kvGet('authError')) || '';
+}
+
+/* ================= LOGIN ================= */
+function loginMsg(m, cls){ const e = $('loginMsg'); e.className = 'loginmsg ' + (cls || ''); e.textContent = m || ''; }
+async function login(){
+  const u = $('username').value.trim(), p = $('password').value;
+  if(!u || !p) return loginMsg('Enter username and password.', 'err');
+  if(!navigator.onLine) return loginMsg('Signing in needs internet once. After that the app works offline.', 'err');
+  $('loginBtn').disabled = true; loginMsg('Signing in…', 'info');
+  try{
+    const r = await apiCall('login', {username: u, password: p});
+    if(!r.ok) throw new Error(r.error || 'Login failed');
+    const prev = await kvGet('me');
+    if(prev && prev.username && prev.username.toLowerCase() !== r.username.toLowerCase() && queue.length){
+      // a different person signing in on a phone with waiting leaves: keep them, they will be sent under the new login
+    }
+    await kvSet('token', r.token);
+    me = {teacher: r.teacher, username: r.username};
+    await kvSet('me', me);
+    await kvSet('authError', ''); authErr = '';
+    $('password').value = '';
+    loginMsg('Downloading students and leave records…', 'info');
+    await downloadAll();
+    loginMsg('');
+    $('reloginNote').classList.add('hidden');
+    showPage('mainPage'); setView('entry'); renderAuth();
+    trySync();
+  }catch(e){
+    loginMsg(e.message, 'err');
+  }finally{
+    $('loginBtn').disabled = false;
+  }
+}
+
+async function logout(){
+  queue = (await kvGet('queue')) || [];
+  if(queue.length && !confirm(`${queue.length} leave change${queue.length>1?'s have':' has'} not reached the sheet yet.\nLogging out deletes ${queue.length>1?'them':'it'} from this phone.\n\nLog out anyway?`)) return;
+  const token = await kvGet('token');
+  if(token && navigator.onLine) apiCall('logout', {token}, 8000).catch(() => {});
+  for(const k of ['token','me','students','months','queue','dataAt','lastSync','authError']) await kvSet(k, null);
+  students = []; server = {}; queue = []; contactLabels = [];
+  results = []; student = null; month = null; dates = []; manual = '';
+  recMonth = null; recRows = []; cResults = [];
+  ['username','password','q','rq','cq'].forEach(i => $(i).value = '');
+  $('list').innerHTML = ''; $('count').textContent = ''; $('cList').innerHTML = ''; $('cCount').textContent = '';
+  $('recList').innerHTML = ''; $('recSum').textContent = ''; $('recStatus').textContent = '';
+  $('filters').classList.add('hidden'); $('selected').classList.add('hidden');
+  $('findCard').classList.remove('hidden');
+  $('reloginNote').classList.add('hidden');
+  view = 'entry';
+  showPage('loginPage');
+}
+
+function startRelogin(){
+  const n = queue.length;
+  $('reloginNote').textContent = n ? `${n} leave change${n>1?'s are':' is'} waiting on this phone. They will be sent after you sign in.` : 'Please sign in again.';
+  $('reloginNote').classList.remove('hidden');
+  if(me.username) $('username').value = me.username;
+  showPage('loginPage');
+  $('password').focus();
+}
+function renderAuth(){
+  $('authBanner').classList.toggle('hidden', !authErr);
+  $('authText').textContent = authErr ? `${authErr}${queue.length ? ` ${queue.length} waiting.` : ''}` : '';
+}
+
+/* ================= DATA FROM THE SHEETS ================= */
+async function downloadAll(){
+  const token = await kvGet('token');
+  const r = await apiCall('data', {token, students: true, months: MONTHS}, 90000);
+  if(!r.ok){ if(r.code === 'AUTH') await setAuthError(r.error); throw new Error(r.error || 'Download failed'); }
+  await kvSet('students', r.students);
+  contactLabels = r.students.labels || [];
+  students = (r.students.list || []).map(x => ({enroll:x[0], student:x[1], father:x[2], classSec:x[3], nums:x[4] || []}));
+  server = r.months || {};
+  await kvSet('months', server);
+  dataAt = r.at || Date.now(); await kvSet('dataAt', dataAt);
+}
+async function refreshMonths(list){
+  const token = await kvGet('token');
+  const r = await apiCall('data', {token, students: false, months: list}, 60000);
+  if(!r.ok){ if(r.code === 'AUTH') await setAuthError(r.error); throw new Error(r.error || 'Download failed'); }
+  Object.keys(r.months || {}).forEach(m => { server[m] = r.months[m]; });
+  await kvSet('months', server);
+  dataAt = r.at || Date.now(); await kvSet('dataAt', dataAt);
+}
+async function downloadLatest(quiet){
+  if(!navigator.onLine){ if(!quiet) toast('No internet. Showing what is saved on this phone.'); return; }
+  try{
+    if(!quiet) toast('Downloading latest…');
+    await trySync();
+    await downloadAll();
+    refreshViews();
+    if(!quiet) toast('Up to date with the sheets.');
+  }catch(e){ if(!quiet) toast(e.message); }
+  renderSyncPanel();
+}
+async function setAuthError(msg){ authErr = msg || 'Please sign in again.'; await kvSet('authError', authErr); renderAuth(); renderSyncPill(); }
+
+/* ================= WAITING CHANGES (queue) ================= */
+function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+async function addOp(op){
+  op.id = newId(); op.at = Date.now();
+  await withQueueLock(async () => {
+    const q = (await kvGet('queue')) || [];
+    const keep = q.filter(o => !(o.enroll === op.enroll && o.month === op.month));   // newer change replaces older
+    keep.push(op);
+    await kvSet('queue', keep);
+    queue = keep;
+  });
+  renderSyncPill(); renderAuth();
+  requestSync();
+}
+async function requestSync(){
+  try{
+    if('serviceWorker' in navigator && 'SyncManager' in window){
+      const reg = await navigator.serviceWorker.ready;
+      await reg.sync.register('leave-sync');
+    }
+  }catch(e){}
+  if(navigator.onLine) trySync();
+}
+async function trySync(){
+  if(syncing) return;
+  queue = (await kvGet('queue')) || [];
+  if(!queue.some(o => !o.failed) || !navigator.onLine || !(await kvGet('token'))){ renderSyncPill(); return; }
+  syncing = true; syncErr = ''; renderSyncPill();
+  try{
+    const r = await syncQueue();
+    if(!r.busy) await afterSync(r, false);
+  }catch(e){
+    syncErr = e.message || 'Could not reach the server';
+  }finally{
+    syncing = false;
+    queue = (await kvGet('queue')) || [];
+    renderSyncPill(); renderSyncPanel(); renderAuth();
+  }
+}
+async function afterSync(r, fromWorker){
+  queue = (await kvGet('queue')) || [];
+  lastSync = (await kvGet('lastSync')) || lastSync;
+  if(r.authError){ await setAuthError(r.authError); }
+  if(r.sent){
+    const touched = [...new Set((r.sentOps || []).map(o => o.month))];
+    try{ await refreshMonths(touched.length ? touched : MONTHS); }catch(e){}
+    if(!fromWorker || document.visibilityState === 'visible') toast(`✔ ${r.sent} leave change${r.sent>1?'s':''} saved to the sheets`);
+    if(student && month && view === 'entry' && !queue.some(o => o.enroll === student.enroll && o.month === month)){
+      setStatus(`✔ ${month} leave is in the sheet.`, 'ok');
+    }
+  }
+  if(r.failed) toast(`${r.failed} change${r.failed>1?'s':''} could not be saved. Tap the status to see why.`);
+  refreshViews(); renderSyncPill(); renderSyncPanel();
+}
+function refreshViews(){
+  if(view === 'records' && recMonth){ recRows = effectiveRows(recMonth); renderRecMonths(); renderRecords(true); }
+  if(student) markMonths();
+}
+
+function renderSyncPill(){
+  const p = $('syncPill'), t = $('syncText');
+  const waiting = queue.filter(o => !o.failed).length, failed = queue.filter(o => o.failed).length;
+  p.className = 'pillbtn';
+  if(authErr){ p.classList.add('bad'); t.textContent = 'Sign in needed'; }
+  else if(failed){ p.classList.add('bad'); t.textContent = `${failed} not saved`; }
+  else if(syncing){ p.classList.add('busy'); t.textContent = `Sending ${waiting}…`; }
+  else if(!navigator.onLine){ p.classList.add(waiting ? 'wait' : 'off'); t.textContent = waiting ? `Offline · ${waiting} waiting` : 'Offline'; }
+  else if(waiting){ p.classList.add('wait'); t.textContent = `${waiting} waiting`; }
+  else t.textContent = 'All saved';
+}
+
+/* ---------- sync panel ---------- */
+function openSync(){ renderSyncPanel(); $('syncShade').classList.remove('hidden'); }
+function closeSync(){ $('syncShade').classList.add('hidden'); }
+function renderSyncPanel(){
+  const waiting = queue.filter(o => !o.failed).length, failed = queue.filter(o => o.failed).length;
+  let line = navigator.onLine ? 'Online.' : 'Offline. Leaves are kept on this phone.';
+  line += ` Last sent: ${ago(lastSync)}. Data downloaded: ${ago(dataAt)}.`;
+  if(syncErr) line += ` Last try: ${syncErr}`;
+  if(authErr) line += ` ${authErr}`;
+  $('syncMeta').textContent = line;
+  $('sendNowBtn').disabled = !waiting || syncing;
+  let canNotify = false;
+  try{ canNotify = 'Notification' in window && Notification.permission === 'default'; }catch(e){}
+  $('notifyBtn').classList.toggle('hidden', !canNotify);
+  if(!queue.length){ $('qList').innerHTML = '<div class="qitem"><b>Nothing waiting.</b><small>Every leave on this phone is in the sheets.</small></div>'; return; }
+  $('qList').innerHTML = (failed ? `<div class="lbl">${failed} could not be saved</div>` : '') +
+    queue.map((o, i) => `<div class="qitem ${o.failed ? 'failed' : ''}">
+      <b>${o.type === 'delete' ? 'Remove' : 'Save'} · ${esc(o.month.slice(0,3))} · ${esc(o.student || o.enroll)}</b>
+      <small>${o.type === 'delete' ? 'Remove this month\'s leave' : `${esc(o.leaveType)}${o.datesShort ? ' (' + esc(o.datesShort) + ')' : ''} · ${esc(o.leaves || '-')} leave(s)`} · saved ${ago(o.at)}</small>
+      ${o.failed ? `<div class="e">${esc(o.error || 'Not saved')}</div><div class="qa"><button class="btn sm" onclick="retryOp(${i})">Try again</button><button class="btn alt sm" onclick="discardOp(${i})">Discard</button></div>` : ''}
+    </div>`).join('');
+}
+async function sendNow(){
+  if(!navigator.onLine) return toast('No internet right now. It will send by itself when you are online.');
+  await trySync();
+}
+async function retryOp(i){
+  const id = queue[i] && queue[i].id; if(!id) return;
+  await withQueueLock(async () => {
+    const q = (await kvGet('queue')) || [];
+    q.forEach(o => { if(o.id === id){ o.failed = false; o.error = ''; } });
+    await kvSet('queue', q); queue = q;
+  });
+  renderSyncPanel(); renderSyncPill(); requestSync();
+}
+async function discardOp(i){
+  const o = queue[i]; if(!o) return;
+  if(!confirm(`Discard this change for ${o.student || o.enroll} (${o.month})? It will not be saved.`)) return;
+  await withQueueLock(async () => {
+    const q = ((await kvGet('queue')) || []).filter(x => x.id !== o.id);
+    await kvSet('queue', q); queue = q;
+  });
+  renderSyncPanel(); renderSyncPill(); refreshViews();
+}
+async function askNotify(){
+  try{ await Notification.requestPermission(); }catch(e){}
+  renderSyncPanel();
+}
+
+/* ================= VIEWS ================= */
+function setView(v){
+  view = v;
+  $('entryView').classList.toggle('hidden', v !== 'entry');
+  $('recordsView').classList.toggle('hidden', v !== 'records');
+  $('contactsView').classList.toggle('hidden', v !== 'contacts');
+  $('tabEntry').classList.toggle('on', v === 'entry');
+  $('tabRecords').classList.toggle('on', v === 'records');
+  $('tabContacts').classList.toggle('on', v === 'contacts');
+  syncSavebar();
+  renderSyncPill();
+  window.scrollTo({top:0});
+  if(v === 'records') initRecords();
+  if(v === 'contacts' && !$('cq').value) renderContactsHint();
+}
+
+/* ================= SEARCH (on the phone) ================= */
+function norm(s){ return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+function findStudents(q, withFather){
+  const tokens = norm(q).split(' ').filter(Boolean);
+  if(!tokens.length) return [];
+  const out = [];
+  for(const s of students){
+    const hay = norm(s.enroll + ' ' + s.student + (withFather ? ' ' + s.father : ''));
+    if(tokens.every(t => hay.includes(t))){ out.push(s); if(out.length >= 200) break; }
+  }
+  return out;
+}
+function search(){
+  const q = $('q').value.trim();
+  if(!students.length){ $('count').innerHTML = '<span class="err">No student list on this phone yet. Connect to the internet and tap the status button, then "Download latest".</span>'; return; }
+  if(q.length < 2){ results = []; $('list').innerHTML = ''; $('count').textContent = q ? 'Keep typing…' : ''; $('filters').classList.add('hidden'); return; }
+  results = findStudents(q, false);
+  const classes = [...new Set(results.map(x => x.classSec).filter(Boolean))].sort();
+  $('fClass').innerHTML = '<option value="">All</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  $('fFather').value = '';
+  $('filters').classList.toggle('hidden', results.length < 2);
+  renderList();
+}
+function initials(n){ return String(n||'?').trim().split(/\s+/).slice(0,2).map(w => w[0]).join('').toUpperCase(); }
+function renderList(){
+  const f = $('fFather').value.trim().toLowerCase(), c = $('fClass').value;
+  const shown = results.map((s, i) => ({s, i})).filter(({s}) =>
+    (!f || String(s.father).toLowerCase().includes(f)) && (!c || s.classSec === c));
+  $('count').textContent = results.length ? `${shown.length} of ${results.length} students` : "No students found. Try another spelling or the enrollment number.";
+  $('list').innerHTML = shown.map(({s, i}) =>
+    `<button class="item" onclick="pick(${i})"><span class="av">${esc(initials(s.student))}</span>
+     <span><b>${esc(s.student)}</b><small>D/o ${esc(s.father || '-')} · ${esc(s.classSec || '-')} · #${esc(s.enroll)}</small></span></button>`).join('');
+}
+
+/* ---------- student + month ---------- */
+function pick(i){ openStudent(results[i]); }
+function openStudent(s){
+  student = s; month = null;
+  $('sAv').textContent = initials(student.student);
+  $('sName').textContent = student.student;
+  $('sMeta').textContent = `Father: ${student.father || '-'} · ${student.classSec || '-'} · #${student.enroll}`;
+  $('months').innerHTML = MONTHS.map(m => `<button data-m="${m}" onclick="pickMonth('${m}')">${m.slice(0,3)}</button>`).join('');
+  markMonths();
+  $('form').classList.add('hidden'); setStatus('');
+  $('selected').classList.remove('hidden');
+  syncSavebar();
+  if(window.matchMedia('(max-width:820px)').matches){ $('findCard').classList.add('hidden'); window.scrollTo({top:0}); }
+}
+// small dot on months where this student already has a leave
+function markMonths(){
+  if(!student) return;
+  document.querySelectorAll('#months button').forEach(b => {
+    b.classList.toggle('has', !!recordOf(student.enroll, b.dataset.m));
+  });
+}
+function changeStudent(){
+  $('findCard').classList.remove('hidden'); $('selected').classList.add('hidden'); syncSavebar();
+  window.scrollTo({top:0});
+}
+
+/* ---------- type ---------- */
+function renderTypes(){
+  $('types').innerHTML = TYPES.concat(['Other']).map((t, i) =>
+    `<button class="chip ${t === typ ? 'on' : ''}" onclick="setType(${i},true)">${t === 'Other' ? 'Other…' : esc(t)}</button>`).join('');
+  $('otherBox').classList.toggle('hidden', typ !== 'Other');
+}
+function setType(i, user){
+  typ = TYPES.concat(['Other'])[i]; renderTypes(); updateCount();
+  if(typ === 'Other' && user) $('lother').focus();
+}
+function currentType(){ return typ === 'Other' ? $('lother').value.trim() : typ; }
+function numberRequired(){ return NO_NUMBER.indexOf(typ) === -1; }
+
+/* ---------- count: dates win, hand-written is the fallback ---------- */
+function dayCount(){ return dates.filter(d => d.iso).length; }
+function onManual(){ manual = $('leaves').value; $('leaves').classList.remove('invalid-field'); updateCount(); }
+function updateCount(){
+  const n = dayCount(), inp = $('leaves'), num = $('slipNum');
+  if(n > 0){
+    inp.classList.add('hidden');
+    num.textContent = n; num.classList.remove('dim');
+    $('slipTitle').textContent = n === 1 ? 'Approved leave: 1 day' : `Approved leaves: ${n} days`;
+    $('slipNote').textContent = 'Counted from the dates above. Remove the dates to type a number by hand.';
+  } else {
+    inp.classList.remove('hidden');
+    if(inp.value !== manual) inp.value = manual;
+    const v = manual.trim();
+    num.textContent = v === '' ? '–' : v; num.classList.toggle('dim', v === '');
+    $('slipTitle').innerHTML = 'Approved leaves' + (numberRequired() ? ' <span class="req">*</span>' : '');
+    $('slipNote').textContent = numberRequired() ? 'No dates selected. Type the number of leaves.' : 'No dates selected. Number is optional for this type.';
+    inp.placeholder = 'Number of leaves';
+  }
+}
+
+/* ---------- dates ---------- */
+function fmtISO(iso){ const [y,m,d] = iso.split('-'); return `${d}-${MON[+m-1]}-${y}`; }
+function parseLabel(s){
+  const m = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec(s.trim());
+  if(!m) return null;
+  const mi = MON.findIndex(x => x.toLowerCase() === m[2].toLowerCase());
+  return mi < 0 ? null : `${m[3]}-${String(mi+1).padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+}
+function isoOf(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function expandRange(from, to){
+  const out = [], start = new Date(from + 'T00:00:00'), end = new Date(to + 'T00:00:00');
+  const days = Math.round((end - start) / 86400000) + 1;
+  for(let i = 0; i < days; i++) out.push(isoOf(new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)));
+  return out;
+}
+function addIsos(list){
+  list.forEach(iso => { if(!dates.some(x => x.iso === iso)) dates.push({iso, label: fmtISO(iso)}); });
+  dates.sort((a,b) => (a.iso || 'zzzz').localeCompare(b.iso || 'zzzz'));
+}
+let live = [];
+const MNUM = {September:9,October:10,November:11,December:12,January:1};
+function setMonthLimits(m){
+  const now = new Date(), start = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+  const mm = MNUM[m], y = mm === 1 ? start + 1 : start, p = String(mm).padStart(2,'0');
+  const min = `${y}-${p}-01`, max = `${y}-${p}-${String(new Date(y, mm, 0).getDate()).padStart(2,'0')}`;
+  ['dFrom','dTo'].forEach(i => { $(i).min = min; $(i).max = max; $(i).value = ''; });
+  live = []; $('moreBtn').classList.add('hidden');
+}
+function rangeChanged(src){
+  const f = $('dFrom'), t = $('dTo');
+  if(src === 'from' && t.value && t.value < f.value) t.value = '';
+  t.min = f.value || f.min;
+  dates = dates.filter(d => live.indexOf(d.iso) === -1);
+  live = [];
+  if(f.value){
+    const list = expandRange(f.value, t.value || f.value);
+    live = list.filter(i => !dates.some(d => d.iso === i));
+    addIsos(list);
+  }
+  $('moreBtn').classList.toggle('hidden', !f.value);
+  renderDates();
+}
+function newRange(){
+  live = []; $('dFrom').value = ''; $('dTo').value = ''; $('dTo').min = $('dFrom').min;
+  $('moreBtn').classList.add('hidden');
+}
+function groupDates(){
+  const groups = []; let cur = null;
+  dates.forEach(d => {
+    if(!d.iso){ cur = null; groups.push({raw: d.label}); return; }
+    const prev = cur ? cur.isos[cur.isos.length - 1] : null;
+    if(cur && expandRange(prev, d.iso).length === 2) cur.isos.push(d.iso);
+    else { cur = {isos:[d.iso]}; groups.push(cur); }
+  });
+  return groups;
+}
+function shortDay(iso){ const [,m,d] = iso.split('-'); return {d:+d, m:MON[+m-1].toUpperCase()}; }
+function groupShort(g){
+  if(g.raw) return g.raw;
+  const a = shortDay(g.isos[0]), b = shortDay(g.isos[g.isos.length-1]);
+  if(g.isos.length === 1) return `${a.d} ${a.m}`;
+  return a.m === b.m ? `${a.d} to ${b.d} ${a.m}` : `${a.d} ${a.m} to ${b.d} ${b.m}`;
+}
+function groupFull(g){
+  if(g.raw) return g.raw;
+  const a = fmtISO(g.isos[0]), b = fmtISO(g.isos[g.isos.length-1]);
+  return g.isos.length === 1 ? a : `${a} to ${b}`;
+}
+function datesShort(){ return groupDates().map(groupShort).join(', '); }
+function datesFull(){ return groupDates().map(groupFull).join(', '); }
+function removeGroup(gi){
+  const g = groupDates()[gi]; if(!g) return;
+  dates = dates.filter(d => g.raw ? d.label !== g.raw : g.isos.indexOf(d.iso) === -1);
+  renderDates();
+}
+function renderDates(){
+  $('dchips').innerHTML = groupDates().map((g, i) =>
+    `<span class="dchip">${esc(groupShort(g))}<button type="button" onclick="removeGroup(${i})" aria-label="Remove ${esc(groupShort(g))}">×</button></span>`).join('');
+  updateCount();
+}
+function loadDates(str){
+  dates = [];
+  String(str || '').split(',').map(s => s.trim()).filter(Boolean).forEach(part => {
+    const bits = part.split(/\s+to\s+/i);
+    const a = parseLabel(bits[0]), b = bits[1] ? parseLabel(bits[1]) : a;
+    if(a && b && b >= a) addIsos(expandRange(a, b));
+    else dates.push({iso: null, label: part});
+  });
+  renderDates();
+}
+function cleanType(t){
+  let s = String(t || '').split(/\r?\n/)[0].trim();
+  const sh = datesShort();
+  const suffix = sh ? ` (${sh})` : '';
+  if(suffix && s.endsWith(suffix)) s = s.slice(0, -suffix.length).trim();
+  return s;
+}
+
+/* ================= MONTH RECORDS = sheet copy + waiting changes ================= */
+function effectiveRows(m){
+  const rows = (server[m] || []).map(r => Object.assign({}, r));
+  queue.filter(o => o.month === m && !o.failed).forEach(o => {
+    const i = rows.findIndex(r => r.enroll === o.enroll);
+    if(o.type === 'delete'){ if(i > -1) rows.splice(i, 1); return; }
+    const row = {
+      enroll: o.enroll, student: o.student, father: o.father, classSec: o.classSec,
+      leaves: o.leaves, teacher: me.teacher, leaveType: o.leaveType,
+      datesShort: o.datesShort, datesFull: o.datesFull, datesK: o.datesFull, pending: true
+    };
+    if(i > -1) rows[i] = row; else rows.push(row);
+  });
+  rows.sort((a, b) => String(a.classSec).localeCompare(String(b.classSec)) || String(a.student).localeCompare(String(b.student)));
+  return rows;
+}
+function recordOf(enroll, m){ return effectiveRows(m).find(r => r.enroll === enroll) || null; }
+
+/* ---------- month ---------- */
+function pickMonth(m){
+  month = m;
+  document.querySelectorAll('#months button').forEach(c => c.classList.toggle('on', c.dataset.m === m));
+  $('form').classList.remove('hidden');
+  manual = ''; $('leaves').value = ''; $('lother').value = '';
+  setMonthLimits(m);
+  dates = []; typ = DEFAULT_TYPE;
+  const r = recordOf(student.enroll, m);
+  if(r){
+    manual = r.leaves || '';
+    loadDates(r.datesK);
+    const t = cleanType(r.leaveType) || DEFAULT_TYPE;
+    const known = TYPES.find(x => x.toLowerCase() === t.toLowerCase());
+    if(known) typ = known; else { typ = 'Other'; $('lother').value = t; }
+  } else renderDates();
+  renderTypes(); updateCount();
+  $('saveBtn').disabled = false;
+  syncSavebar();
+  if(!r) setStatus(`No ${m} entry yet.`, 'info');
+  else if(r.pending) setStatus(`${m} entry is on this phone, waiting to reach the sheet. Saving will update it.`, 'waitc');
+  else setStatus(`${m} entry loaded. Saving will update it.`, 'info');
+}
+
+/* ---------- save (to the phone first) ---------- */
+async function save(){
+  if(!student || !month) return;
+  const type = currentType(), n = dayCount();
+  const leaves = n > 0 ? String(n) : manual.trim();
+
+  if(typ === 'Other' && !type){
+    $('lother').classList.add('invalid-field'); $('lother').focus();
+    return setStatus('Type the leave type for "Other".', 'err');
+  }
+  if(n === 0 && leaves !== '' && !/^\d+(\.\d+)?$/.test(leaves)){
+    $('leaves').classList.add('invalid-field'); $('leaves').focus();
+    return setStatus('Approved leaves must be a number.', 'err');
+  }
+  if(n === 0 && leaves === '' && numberRequired()){
+    $('leaves').classList.add('invalid-field'); $('leaves').focus();
+    return setStatus(`Enter the number of leaves for ${type}, or add dates.`, 'err');
+  }
+
+  $('saveBtn').disabled = true;
+  try{
+    await addOp({
+      type: 'save', enroll: student.enroll, month,
+      leaves, leaveType: type, datesFull: datesFull(), datesShort: datesShort(),
+      student: student.student, father: student.father, classSec: student.classSec
+    });
+    buzz();
+    markMonths();
+    setStatus(navigator.onLine ? `✔ Saved. Sending ${month} leave to the sheet…` : `✔ Saved on this phone. It will reach the sheet when you are online.`, 'ok');
+  }catch(e){
+    setStatus('Could not save on this phone: ' + e.message, 'err');
+  }finally{
+    $('saveBtn').disabled = false;
+  }
+}
+
+/* ================= RECORDS ================= */
+function currentMonthName(){
+  const m = new Date().getMonth();
+  return ({8:"September",9:"October",10:"November",11:"December",0:"January"})[m] || MONTHS[0];
+}
+function initRecords(){
+  if(!recMonth) recMonth = currentMonthName();
+  loadRecords(recMonth);
+}
+function renderRecMonths(){
+  $('recMonths').innerHTML = MONTHS.map(m => {
+    const c = effectiveRows(m).length;
+    return `<button class="${m === recMonth ? 'on' : ''}" data-m="${m}" onclick="loadRecords('${m}')">${m.slice(0,3)}<span class="bd">${c}</span></button>`;
+  }).join('');
+}
+function loadRecords(m){
+  recMonth = m;
+  recMsg('');
+  recRows = effectiveRows(m);
+  renderRecMonths(); renderRecords(true);
+}
+async function refreshRecMonth(){
+  if(!navigator.onLine) return recMsg('No internet. Showing what is saved on this phone.', 'info');
+  recMsg(`Refreshing ${recMonth}…`, 'info');
+  try{
+    await trySync();
+    await refreshMonths([recMonth]);
+    loadRecords(recMonth);
+    recMsg(`✔ ${recMonth} is up to date.`, 'ok');
+  }catch(e){ recMsg(e.message, 'err'); }
+}
+function renderRecords(rebuildClasses){
+  if(rebuildClasses === true){
+    const classes = [...new Set(recRows.map(r => r.classSec).filter(Boolean))].sort();
+    const cur = $('rClass').value;
+    $('rClass').innerHTML = '<option value="">All classes</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    if(classes.includes(cur)) $('rClass').value = cur;
+  }
+  const q = $('rq').value.trim().toLowerCase(), c = $('rClass').value;
+  const shown = recRows.map((r, i) => ({r, i})).filter(({r}) =>
+    (!c || r.classSec === c) &&
+    (!q || (r.student + ' ' + r.father + ' ' + r.enroll).toLowerCase().includes(q)));
+  const days = shown.reduce((a, {r}) => a + (parseFloat(r.leaves) || 0), 0);
+  const pend = recRows.filter(r => r.pending).length;
+  const filtered = shown.length !== recRows.length;
+  $('recSum').textContent = recRows.length
+    ? `${recMonth}: ${shown.length} student${shown.length === 1 ? '' : 's'}, ${+days.toFixed(1)} leave days` + (filtered ? ` (filtered from ${recRows.length})` : '') + (pend ? ` · ${pend} waiting to send` : '')
+    : '';
+  if(!shown.length){
+    $('recList').innerHTML = `<div class="recmsg">${recRows.length ? 'No records match the filter.' : `No leaves marked for ${esc(recMonth)} yet.`}</div>`;
+    return;
+  }
+  $('recList').innerHTML = shown.map(({r, i}) => {
+    const hasNum = String(r.leaves).trim() !== '';
+    return `<div class="rec">
+      <span class="av">${esc(initials(r.student))}</span>
+      <div class="who2"><b>${esc(r.student)}</b><small>D/o ${esc(r.father || '-')} · ${esc(r.classSec || '-')} · #${esc(r.enroll)}</small></div>
+      <div class="info"><span class="pill">${esc(r.leaveType || '-')}</span>${r.pending ? ' <span class="pill wait">⏳ waiting</span>' : ''}
+        ${r.datesShort ? `<small title="${esc(r.datesFull)}">${esc(r.datesShort)}</small>` : ''}
+        ${r.teacher ? `<small>by ${esc(r.teacher)}</small>` : ''}</div>
+      <div class="rnum ${hasNum ? '' : 'none'}" title="Approved leaves">${hasNum ? esc(r.leaves) : '–'}</div>
+      <div class="act">
+        <button type="button" onclick="editRec(${i})">Edit</button>
+        <button type="button" class="x" title="Remove this leave" aria-label="Remove leave of ${esc(r.student)}" onclick="removeRec(${i})">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function recMsg(msg, cls){ const s = $('recStatus'); s.className = 'recstatus ' + (cls || ''); s.textContent = msg || ''; }
+
+async function removeRec(i){
+  const r = recRows[i], m = recMonth;
+  if(!r) return;
+  if(!confirm(`Remove ${m} leave of ${r.student}?\n\n${r.leaveType || 'Leave'}${r.datesShort ? ' (' + r.datesShort + ')' : ''}, ${r.leaves || '-'} leave(s).`)) return;
+  const inSheet = (server[m] || []).some(x => x.enroll === r.enroll);
+  if(inSheet){
+    await addOp({type: 'delete', enroll: r.enroll, month: m, student: r.student, father: r.father, classSec: r.classSec});
+  } else {
+    // only on this phone: just drop the waiting save
+    await withQueueLock(async () => {
+      const q = ((await kvGet('queue')) || []).filter(o => !(o.enroll === r.enroll && o.month === m));
+      await kvSet('queue', q); queue = q;
+    });
+    renderSyncPill();
+  }
+  buzz();
+  loadRecords(m);
+  recMsg(`✔ Removed ${m} leave of ${r.student}` + (inSheet ? (navigator.onLine ? '. Updating the sheet…' : '. The sheet will update when you are online.') : '.'), 'ok');
+  if(student && month === m && student.enroll === r.enroll) pickMonth(m);
+}
+
+function editRec(i){
+  const r = recRows[i]; if(!r) return;
+  setView('entry');
+  const s = students.find(x => x.enroll === r.enroll) || {enroll: r.enroll, student: r.student, father: r.father, classSec: r.classSec, nums: []};
+  openStudent(s);
+  pickMonth(recMonth);
+}
+
+/* ================= CONTACTS ================= */
+function renderContactsHint(){
+  $('cList').innerHTML = '';
+  if(!students.length) $('cCount').textContent = 'No student list on this phone yet.';
+  else if(!contactLabels.length) $('cCount').innerHTML = '<span class="err">No phone numbers were found in the student sheet. Ask the admin to set the contact columns in the script.</span>';
+  else $('cCount').textContent = `${students.filter(s => s.nums.some(Boolean)).length} students have numbers saved on this phone.`;
+  $('cFilters').classList.add('hidden');
+}
+function searchContacts(){
+  const q = $('cq').value.trim();
+  if(q.length < 2){ cResults = []; return renderContactsHint(); }
+  cResults = findStudents(q, true);
+  const classes = [...new Set(cResults.map(x => x.classSec).filter(Boolean))].sort();
+  $('cClass').innerHTML = '<option value="">All</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  $('cFilters').classList.toggle('hidden', cResults.length < 2);
+  renderContacts();
+}
+// a cell may hold more than one number: "0300-1234567 / 0345 7654321"
+function splitNums(cell){ return String(cell || '').split(/[,\/;|]|\s+or\s+/i).map(s => s.trim()).filter(s => s.replace(/\D/g, '').length >= 7); }
+function waNumber(n){
+  let d = String(n).replace(/\D/g, '');
+  if(d.startsWith('0092')) d = d.slice(2);
+  if(d.length === 11 && d.startsWith('0')) d = '92' + d.slice(1);
+  else if(d.length === 10 && d.startsWith('3')) d = '92' + d;
+  return d;
+}
+function renderContacts(){
+  const c = $('cClass').value;
+  const shown = cResults.filter(s => !c || s.classSec === c);
+  $('cCount').textContent = cResults.length ? `${shown.length} of ${cResults.length} students` : 'No students found. Try another spelling or the enrollment number.';
+  $('cList').innerHTML = shown.slice(0, 80).map(s => {
+    const rows = [];
+    (s.nums || []).forEach((cell, k) => splitNums(cell).forEach(n => rows.push({label: contactLabels[k] || 'Number', n})));
+    const idx = students.indexOf(s);
+    return `<div class="ccard">
+      <div class="hd"><span class="av">${esc(initials(s.student))}</span>
+        <span><b>${esc(s.student)}</b><small>D/o ${esc(s.father || '-')} · ${esc(s.classSec || '-')} · #${esc(s.enroll)}</small></span></div>
+      ${rows.length ? `<div class="nums">${rows.map(x => `<div class="numrow"><span class="lab">${esc(x.label)}</span>
+          <span class="n">${esc(x.n)}</span>
+          <a href="tel:${esc(x.n.replace(/[^\d+]/g, ''))}" aria-label="Call ${esc(x.n)}">Call</a>
+          <a class="wa" href="https://wa.me/${esc(waNumber(x.n))}" target="_blank" rel="noopener" aria-label="WhatsApp ${esc(x.n)}">WhatsApp</a>
+          <button type="button" onclick="copyText('${esc(x.n)}')">Copy</button></div>`).join('')}</div>
+          <button class="btn alt sm cshare" onclick="shareContact(${idx})">Share details on WhatsApp</button>`
+        : '<div class="nonum">No number saved for this student.</div>'}
+    </div>`;
+  }).join('') + (shown.length > 80 ? `<div class="recmsg">Showing the first 80. Type more of the name to narrow it down.</div>` : '');
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast('Copied ' + t); }
+  catch(e){ prompt('Copy this number:', t); }
+}
+function shareContact(i){
+  const s = students[i]; if(!s) return;
+  const lines = [`*${s.student}*`, `D/o ${s.father || '-'}`, `Class: ${s.classSec || '-'}`, `Enroll#: ${s.enroll}`];
+  (s.nums || []).forEach((cell, k) => { if(String(cell).trim()) lines.push(`${contactLabels[k] || 'Number'}: ${cell}`); });
+  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+}
+function contactOfSelected(){
+  if(!student) return;
+  setView('contacts');
+  $('cq').value = student.enroll;
+  searchContacts();
+}
+
+boot();
+</script>
+</body>
+</html>
