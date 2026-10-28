@@ -3,8 +3,9 @@
    - sends saved leaves in the background when internet returns */
 importScripts('sync.js');
 
-const CACHE = 'jcw-leaves-v2';          // change the number when you upload new files
-const SHELL = ['./', './index.html', './sync.js', './manifest.json', './icon-192.png', './icon-512.png'];
+const CACHE = 'jcw-leaves-v3';          // change the number when you upload new files
+const SHELL = ['./', './index.html', './sync.js', './manifest.json', './icon-192.png', './icon-512.png',
+               './jspdf.umd.min.js', './jspdf.plugin.autotable.min.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

@@ -5,7 +5,7 @@
    ============================================================ */
 
 // Paste the URL of the API deployment (Execute as: Me, Who has access: Anyone)
-const API_URL = 'https://script.google.com/a/macros/uop.edu.pk/s/AKfycbzbQMTB9Ltk2qGiREVeTogvSUH52jGyNi4wRT4qSvfq3BkOuD4IfN38CeC5YPE8jpkM/exec';
+const API_URL = 'PASTE_API_DEPLOYMENT_URL_HERE';
 
 const DB_NAME = 'jcw-leaves', DB_STORE = 'kv';
 let _db = null;
@@ -78,15 +78,23 @@ async function syncQueue() {
     const sentOps = [];
     for (let round = 0; round < 25; round++) {
       const q = (await kvGet('queue')) || [];
-      const batch = q.filter(o => !o.failed).slice(0, 40);
+      // up to 40 changes, but keep one call under ~3 MB (photos are big)
+      const batch = [];
+      let size = 0;
+      for (const o of q.filter(o => !o.failed)) {
+        const sz = (o.photos || []).reduce((a, p) => a + (p.data ? p.data.length : 0), 0) + 600;
+        if (batch.length && (batch.length >= 40 || size + sz > 3000000)) break;
+        batch.push(o); size += sz;
+      }
       if (!batch.length) break;
       const res = await apiCall('sync', {
         token,
         ops: batch.map(o => ({
           id: o.id, type: o.type, enroll: o.enroll, month: o.month, leaves: o.leaves,
-          leaveType: o.leaveType, datesFull: o.datesFull, datesShort: o.datesShort
+          leaveType: o.leaveType, datesFull: o.datesFull, datesShort: o.datesShort,
+          photos: (o.photos || []).map(p => ({ data: p.data }))
         }))
-      });
+      }, size > 500000 ? 180000 : 60000);
       if (!res.ok) {
         if (res.code === 'AUTH') {
           await kvSet('authError', res.error || 'Please sign in again.');

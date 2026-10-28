@@ -16,15 +16,17 @@ body{margin:0;background:var(--bg);font-family:Manrope,'Segoe UI',Arial,sans-ser
 h1,h2,h3,.num{font-family:'Bricolage Grotesque',Manrope,sans-serif}
 button{font-family:inherit;cursor:pointer}
 input,select{width:100%;padding:12px 14px;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:inherit;transition:border-color .15s,box-shadow .15s}
+input[type=checkbox],input[type=radio]{width:auto;padding:0}
 input:focus,select:focus,button:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(15,165,151,.18)}
 label,.lbl{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 6px}
 .hidden{display:none!important}
 .page{display:none}.page.active{display:block}
-.btn{border:none;border-radius:12px;padding:12px 20px;font-size:15px;font-weight:700;background:var(--teal);color:#fff;min-height:48px;transition:background .15s,transform .05s}
+.btn{border:none;border-radius:12px;padding:12px 20px;font-size:15px;font-weight:700;background:var(--teal);color:#fff;min-height:48px;transition:background .15s,transform .05s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn:hover{background:var(--teal-d)}.btn:active{transform:translateY(1px)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.alt{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
 .btn.alt:hover{background:#f2f5fa}
+.btn.wa{background:#1fa855}.btn.wa:hover{background:#178a45}
 .btn.full{width:100%}
 .btn.sm{min-height:40px;padding:8px 14px;font-size:14px}
 .req{color:var(--bad)}
@@ -60,8 +62,9 @@ label,.lbl{display:block;font-size:13px;font-weight:700;color:var(--muted);margi
 .banner .in{display:flex;gap:12px;align-items:center;justify-content:space-between;background:#fff6e5;border:1.5px solid #f3d29a;color:#7a4b00;border-radius:14px;padding:10px 14px;font-weight:700;font-size:14px}
 
 /* view tabs */
-.tabs{display:flex;gap:6px;max-width:1080px;margin:0 auto;padding:16px 16px 0}
-.tab{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 18px;font-weight:700;color:var(--navy);min-height:44px}
+.tabs{display:flex;gap:6px;max-width:1080px;margin:0 auto;padding:16px 16px 2px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 16px;font-weight:700;color:var(--navy);min-height:44px;white-space:nowrap}
 .tab:hover{border-color:var(--teal)}
 .tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
 
@@ -87,14 +90,32 @@ label,.lbl{display:block;font-size:13px;font-weight:700;color:var(--muted);margi
 .stu{display:flex;gap:14px;align-items:center}
 .stu .av{width:52px;height:52px;font-size:18px;border-radius:16px}
 .stu h2{font-size:22px;margin:0}.stu small{color:var(--muted)}
-.stuacts{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+.stuacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.stuacts .btn{flex:1 1 auto}
+.hist{display:grid;grid-template-columns:repeat(5,1fr) 1.3fr;gap:6px;margin-top:14px}
+.hist div{background:var(--bg);border-radius:10px;padding:6px 4px;text-align:center}
+.hist small{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.hist b{font:800 18px 'Bricolage Grotesque',sans-serif;color:var(--navy)}
+.hist .z b{color:#b9c4d2}
+.hist .tot{background:var(--navy)}.hist .tot small{color:#b5c4d8}.hist .tot b{color:var(--amber)}
+.hist .tot.over{background:var(--bad)}.hist .tot.over b{color:#fff}
+.histnote{font-size:12.5px;font-weight:700;margin-top:6px;color:var(--bad)}
 .seg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .seg button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:11px 0;font-weight:700;font-size:14px;color:var(--navy);position:relative}
 .seg button:hover{border-color:var(--teal)}
 .seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
 .seg button.has:after{content:"";position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--teal)}
 .bd{display:inline-block;margin-left:5px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--bg);color:var(--navy);font-size:11px;line-height:18px;vertical-align:1px}
-.seg button.on .bd{background:var(--amber)}
+.seg button.on .bd,.tab.on .bd{background:var(--amber);color:var(--navy)}
+
+/* attendance check */
+.att table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.att th,.att td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+.att th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.att td.n{text-align:right;font-weight:700;white-space:nowrap}
+.att .low{color:var(--bad)}.att .okp{color:var(--good)}
+.att .subs{font-size:12.5px;color:var(--bad);font-weight:600}
+.att .note{font-size:12.5px;color:var(--muted)}
 
 /* type chips + dates */
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -106,6 +127,17 @@ input.invalid-field{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(
 .dchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .dchip{display:inline-flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:10px;background:#e8f7f5;color:var(--teal-d);font-size:13.5px;font-weight:700}
 .dchip button{width:24px;height:24px;border-radius:8px;border:none;background:#fff;color:var(--bad);font-weight:800;padding:0}
+.clash{margin-top:10px;background:#fff6e5;border:1.5px solid #f3d29a;color:#7a4b00;border-radius:12px;padding:8px 12px;font-size:13.5px;font-weight:700}
+
+/* photos */
+.thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.thumb{position:relative;width:84px;height:84px;border-radius:12px;overflow:hidden;border:1.5px solid var(--line);background:var(--bg)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:8px;border:none;background:rgba(255,255,255,.92);color:var(--bad);font-weight:800;padding:0}
+.proofs{margin-top:10px;font-size:13.5px;color:var(--muted)}
+.proofs a{color:var(--teal-d);font-weight:700;margin-right:10px}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 
 /* ticket: the leave count */
 .slip{display:flex;align-items:stretch;margin-top:18px;background:var(--navy);color:#fff;border-radius:16px;position:relative}
@@ -119,8 +151,8 @@ input.invalid-field{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(
 .slip input{margin-top:10px;max-width:200px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff}
 .slip input::placeholder{color:rgba(255,255,255,.5)}
 
-/* records view */
-#recordsView,#contactsView{max-width:1080px;margin:0 auto;padding:16px 16px 60px}
+/* other views */
+.view{max-width:1080px;margin:0 auto;padding:16px 16px 60px}
 .rechead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .recfilters{display:grid;grid-template-columns:1fr 200px;gap:10px;margin-top:14px}
 .recfilters input,.recfilters select{padding:10px 14px}
@@ -132,17 +164,41 @@ input.invalid-field{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(
 .rec .who2 b{display:block;font-weight:700;color:var(--navy);overflow-wrap:anywhere}
 .rec .who2 small,.rec .info small{display:block;color:var(--muted);font-size:12.5px}
 .rec .info{grid-area:info;min-width:0}
+.rec .info a{color:var(--teal-d);font-weight:700;font-size:12.5px}
 .pill{display:inline-block;padding:3px 10px;border-radius:8px;background:#e8f7f5;color:var(--teal-d);font-size:13px;font-weight:700;margin-bottom:2px}
 .pill.wait{background:#fff1d6;color:var(--wait)}
+.pill.bad{background:#fde8ea;color:var(--bad)}
+.pill.grey{background:var(--bg);color:var(--muted)}
 .rec .rnum{grid-area:num;font:800 26px 'Bricolage Grotesque',sans-serif;color:var(--navy);text-align:center}
 .rec .rnum.none{color:var(--line)}
-.rec .act{grid-area:act;display:flex;gap:8px;justify-content:flex-end}
+.rec .act{grid-area:act;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .rec .act button{height:38px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:700;color:var(--navy);padding:0 14px}
 .rec .act button:hover{background:var(--bg)}
 .rec .act .x{width:38px;padding:0;color:var(--bad);font-size:20px;line-height:1}
 .rec .act .x:hover{background:var(--bad);border-color:var(--bad);color:#fff}
 .recmsg{padding:36px 10px;text-align:center;color:var(--muted);border-top:1px solid var(--line)}
 .recstatus{font-size:14px;font-weight:700;margin-top:12px;min-height:21px}
+
+/* class view */
+.crow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 4px;border-top:1px solid var(--line)}
+.crow input{width:22px;height:22px;accent-color:var(--teal)}
+.crow .nm{min-width:0;background:none;border:none;text-align:left;padding:0;font:inherit;color:inherit}
+.crow .nm b{display:block;color:var(--navy);font-weight:700}.crow .nm small{display:block;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini{display:flex;gap:3px;align-items:center}
+.mini span{width:24px;text-align:center;font-size:12px;font-weight:700;color:#b9c4d2;background:var(--bg);border-radius:6px;padding:2px 0}
+.mini span.y{color:var(--navy);background:#e8f7f5}
+.mini b{min-width:30px;text-align:right;font:800 16px 'Bricolage Grotesque',sans-serif;color:var(--navy)}
+.mini b.over{color:var(--bad)}
+.minihead{display:flex;justify-content:flex-end;gap:3px;padding:0 4px;font-size:11px;font-weight:700;color:var(--muted)}
+.minihead span{width:24px;text-align:center}.minihead b{min-width:30px;text-align:right}
+.selbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.bulkbar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));z-index:6}
+.bulkbar .in{max-width:1080px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.bulkbar .in span{flex:1;font-weight:700;color:var(--navy)}
+.modes{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.modes label{display:flex;gap:10px;align-items:flex-start;margin:0;font-size:14px;font-weight:600;color:#14243a;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+.modes input{margin-top:3px;accent-color:var(--teal)}
+.bnames{font-size:13px;color:var(--muted);margin-top:6px;max-height:84px;overflow:auto}
 
 /* contacts */
 .ccard{border-top:1px solid var(--line);padding:14px 4px}
@@ -157,15 +213,31 @@ input.invalid-field{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(
 .nonum{margin-top:8px;font-size:13px;color:var(--muted)}
 .cshare{margin-top:8px}
 
+/* reports */
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rgrid .card{margin:0}
+.racts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.rpreview{font-size:13.5px;color:var(--muted);margin-top:10px;font-weight:600}
+
+/* today log */
+.litem{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 4px;border-top:1px solid var(--line)}
+.litem time{font:700 13px Manrope,sans-serif;color:var(--muted)}
+.litem b{color:var(--navy)}.litem small{display:block;color:var(--muted);font-size:12.5px}
+.litem.undone{opacity:.55}.litem.undone b{text-decoration:line-through}
+.litem .la{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.litem .la button{height:38px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:700;color:var(--navy);padding:0 12px}
+.daysel{display:flex;gap:8px;align-items:center;margin-top:10px}
+.daysel input{max-width:220px}
+
 /* save bar */
 .savebar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));z-index:6}
 .savebar .in{max-width:1080px;margin:0 auto;display:flex;gap:14px;align-items:center;justify-content:flex-end}
 .status{flex:1;font-size:14px;font-weight:700;min-width:0}
 .ok{color:var(--good)}.err{color:var(--bad)}.info{color:var(--muted);font-weight:600}.waitc{color:var(--wait)}
 
-/* sync sheet */
+/* sheets (sync panel, bulk form) */
 .shade{position:fixed;inset:0;background:rgba(13,37,64,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:#fff;width:100%;max-width:560px;max-height:86vh;overflow:auto;border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet{background:#fff;width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet h2{margin:0 0 4px;color:var(--navy);font-size:20px}
 .sheet .meta{font-size:13px;color:var(--muted);margin-bottom:12px}
 .sheet .acts{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
@@ -180,8 +252,8 @@ input.invalid-field{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(
   #loginPage.active{grid-template-columns:1fr;min-height:auto}
   .brand{padding:28px 24px 32px}.brand h1{font-size:34px}.brand:after{display:none}
   #entryView{grid-template-columns:1fr;padding:12px 12px 110px;gap:0}
-  .tabs{padding:12px 12px 0}.tab{flex:1;padding:10px 4px;font-size:14px}
-  #recordsView,#contactsView{padding:12px 12px 40px}
+  .tabs{padding:12px 12px 2px}.tab{padding:10px 14px;font-size:14px}
+  .view{padding:12px 12px 110px}
   .find{position:static}
   #list{max-height:none}
   .empty{display:none!important}
@@ -192,6 +264,7 @@ input.invalid-field{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(
   .rec{grid-template-columns:44px minmax(0,1fr) auto;grid-template-areas:"av who num" "av info info" "av act act"}
   .rec .act{justify-content:flex-start}
   .seg button,.chip,.btn{min-height:48px}
+  .btn.sm{min-height:42px}
   .chip{padding:11px 16px}
   .dchip{font-size:14px;padding-left:14px}.dchip button{width:32px;height:32px}
   .card{padding:16px}
@@ -199,9 +272,10 @@ input.invalid-field{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(
   .savebar .in{gap:10px}.savebar .btn{min-width:124px}
   .seg button{padding:11px 0;font-size:13px}.bd{margin-left:3px;padding:0 4px}
   .rec .act button{height:44px}.rec .act .x{width:44px}
-  .stu{flex-wrap:wrap}.stuacts{margin-left:0;width:100%;justify-content:flex-start}
+  .rgrid{grid-template-columns:1fr}
+  .litem{grid-template-columns:46px minmax(0,1fr)}.litem .la{grid-column:2;justify-content:flex-start}
 }
-@media(max-width:420px){.row.dates{flex-direction:column;gap:0}.top h1>span{display:none}.who .out{padding:7px 10px}}
+@media(max-width:420px){.row.dates{flex-direction:column;gap:0}.top h1>span{display:none}.who .out{padding:7px 10px}.mini span{width:20px}.minihead span{width:20px}}
 button,input,select,a{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
@@ -236,10 +310,13 @@ button,input,select,a{touch-action:manipulation}
 <div id="mainPage" class="page">
   <div class="banner hidden" id="authBanner"><div class="in"><span id="authText"></span><button class="btn sm" onclick="startRelogin()">Sign in</button></div></div>
 
-  <div class="tabs">
-    <button class="tab on" id="tabEntry" onclick="setView('entry')">Enter leave</button>
-    <button class="tab" id="tabRecords" onclick="setView('records')">Records</button>
-    <button class="tab" id="tabContacts" onclick="setView('contacts')">Contacts</button>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-v="entry" onclick="setView('entry')">Enter leave</button>
+    <button class="tab" data-v="records" onclick="setView('records')">Records</button>
+    <button class="tab" data-v="class" onclick="setView('class')">Class<span class="bd hidden" id="selCount"></span></button>
+    <button class="tab" data-v="contacts" onclick="setView('contacts')">Contacts</button>
+    <button class="tab" data-v="reports" onclick="setView('reports')">Reports</button>
+    <button class="tab" data-v="log" onclick="setView('log')">Today<span class="bd hidden" id="logCount"></span></button>
   </div>
 
   <!-- ===== ENTER LEAVE ===== -->
@@ -265,14 +342,21 @@ button,input,select,a{touch-action:manipulation}
         <div class="card">
           <div class="stu"><div class="av" id="sAv"></div>
             <div><h2 id="sName"></h2><small id="sMeta"></small></div>
-            <div class="stuacts">
-              <button class="btn alt sm" onclick="contactOfSelected()">Contact</button>
-              <button class="btn alt sm" onclick="changeStudent()">Change</button>
-            </div>
+          </div>
+          <div class="hist" id="hist"></div>
+          <div class="histnote hidden" id="histNote"></div>
+          <div class="stuacts">
+            <button class="btn alt sm" onclick="checkAttendance()">Attendance</button>
+            <button class="btn alt sm" onclick="contactOfSelected()">Contact</button>
+            <button class="btn alt sm" onclick="parentMsg()">WhatsApp parent</button>
+            <button class="btn alt sm" onclick="certificatePdf()">Certificate</button>
+            <button class="btn alt sm" onclick="changeStudent()">Change</button>
           </div>
           <div class="lbl" style="margin-top:18px">Month</div>
           <div class="seg" id="months"></div>
         </div>
+
+        <div class="card att hidden" id="attBox"></div>
 
         <div id="form" class="hidden">
           <div class="card">
@@ -285,13 +369,14 @@ button,input,select,a{touch-action:manipulation}
 
           <div class="card">
             <h2>Dates and count</h2>
-            <p class="sub">Dates are optional. Pick From and To and the count updates at once.</p>
+            <p class="sub">Dates are optional. Pick From and To and the count updates at once. Every picked day counts.</p>
             <div class="row dates">
               <div><div class="lbl" style="margin-top:6px">From</div><input id="dFrom" type="date" onchange="rangeChanged('from')"></div>
               <div><div class="lbl" style="margin-top:6px">To (blank = one day)</div><input id="dTo" type="date" onchange="rangeChanged('to')"></div>
             </div>
             <button class="btn alt hidden" id="moreBtn" type="button" style="margin-top:12px" onclick="newRange()">Add another range</button>
             <div class="dchips" id="dchips"></div>
+            <div class="clash hidden" id="clash"></div>
 
             <div class="slip">
               <div class="num" id="slipNum">0</div>
@@ -302,6 +387,17 @@ button,input,select,a{touch-action:manipulation}
               </div>
             </div>
           </div>
+
+          <div class="card">
+            <h2>Application photo</h2>
+            <p class="sub">Optional. Photo of the application or medical certificate. Saved to Drive with the leave.</p>
+            <div class="row" style="margin-top:10px">
+              <label class="btn alt sm filebtn" style="margin:0">Take photo<input type="file" accept="image/*" capture="environment" onchange="addPhotos(this)"></label>
+              <label class="btn alt sm filebtn" style="margin:0">From gallery<input type="file" accept="image/*" multiple onchange="addPhotos(this)"></label>
+            </div>
+            <div class="thumbs" id="thumbs"></div>
+            <div class="proofs" id="proofs"></div>
+          </div>
         </div>
       </div>
       <div class="empty"><b>Pick a student</b>Search on the left, then choose a student to enter leave.</div>
@@ -309,7 +405,7 @@ button,input,select,a{touch-action:manipulation}
   </div>
 
   <!-- ===== RECORDS ===== -->
-  <div id="recordsView" class="hidden">
+  <div id="recordsView" class="view hidden">
     <div class="card">
       <div class="rechead">
         <div>
@@ -329,8 +425,27 @@ button,input,select,a{touch-action:manipulation}
     </div>
   </div>
 
+  <!-- ===== CLASS (view + many students at once) ===== -->
+  <div id="classView" class="view hidden">
+    <div class="card">
+      <h2>Class view</h2>
+      <p class="sub">Leave days of every student in a section, month by month. Tick students to give them the same leave in one go.</p>
+      <div class="recfilters">
+        <select id="clsSel" onchange="renderClass()"></select>
+        <input id="clsQ" type="search" placeholder="Filter by name" oninput="renderClass()">
+      </div>
+      <div class="selbar">
+        <button class="btn alt sm" onclick="selectAllVisible(true)">Tick all shown</button>
+        <button class="btn alt sm" onclick="selectAllVisible(false)">Untick all shown</button>
+      </div>
+      <div class="recsum" id="clsSum"></div>
+      <div class="minihead" id="clsHead"></div>
+      <div id="clsList"></div>
+    </div>
+  </div>
+
   <!-- ===== CONTACTS ===== -->
-  <div id="contactsView" class="hidden">
+  <div id="contactsView" class="view hidden">
     <div class="card">
       <h2>Student contacts</h2>
       <p class="sub">Search by name, father name or enrollment number. Tap to call, WhatsApp or copy.</p>
@@ -342,12 +457,75 @@ button,input,select,a{touch-action:manipulation}
       <div id="cList"></div>
     </div>
   </div>
+
+  <!-- ===== REPORTS ===== -->
+  <div id="reportsView" class="view hidden">
+    <div class="rgrid">
+      <div class="card">
+        <h2>On leave on a date</h2>
+        <p class="sub">Students whose approved leave covers the chosen day. Only leaves entered with dates can be matched to a day.</p>
+        <input id="repDate" type="date" onchange="previewDateReport()">
+        <div class="rpreview" id="repDatePrev"></div>
+        <div class="racts">
+          <button class="btn sm" onclick="dateReport('pdf')">PDF</button>
+          <button class="btn wa sm" onclick="dateReport('wa')">WhatsApp text</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Month report</h2>
+        <p class="sub">All approved leaves of a month, grouped by class.</p>
+        <div class="seg" id="repMonths"></div>
+        <select id="repClass" style="margin-top:10px" onchange="previewMonthReport()"></select>
+        <div class="rpreview" id="repMonthPrev"></div>
+        <div class="racts">
+          <button class="btn sm" onclick="monthReport('pdf')">PDF</button>
+          <button class="btn wa sm" onclick="monthReport('wa')">WhatsApp text</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Session summary</h2>
+        <p class="sub">Students on leave and leave days per class for September to January. Good for the Principal.</p>
+        <div class="racts">
+          <button class="btn sm" onclick="sessionReport()">PDF</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Student certificate</h2>
+        <p class="sub">A one-page leave record for one student. Open the student in "Enter leave" and tap <b>Certificate</b>.</p>
+        <div class="racts"><button class="btn alt sm" onclick="setView('entry')">Find a student</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TODAY (log + undo) ===== -->
+  <div id="logView" class="view hidden">
+    <div class="card">
+      <div class="rechead">
+        <div>
+          <h2>What you entered</h2>
+          <p class="sub">Every save and removal on this phone. Undo puts the leave back the way it was.</p>
+        </div>
+        <button class="btn alt sm" onclick="logPdf()">PDF</button>
+      </div>
+      <div class="daysel"><input id="logDay" type="date" onchange="renderLog()"><button class="btn alt sm" onclick="$('logDay').value=isoOf(new Date());renderLog()">Today</button></div>
+      <div class="recsum" id="logSum"></div>
+      <div id="logList"></div>
+    </div>
+  </div>
 </div>
 
 <div class="savebar hidden" id="savebar">
   <div class="in">
     <div class="status" id="status"></div>
     <button class="btn" id="saveBtn" onclick="save()" disabled>Save leave</button>
+  </div>
+</div>
+
+<div class="bulkbar hidden" id="bulkbar">
+  <div class="in">
+    <span id="bulkText"></span>
+    <button class="btn alt sm" onclick="clearSelection()">Clear</button>
+    <button class="btn sm" onclick="openBulk()">Mark leave</button>
   </div>
 </div>
 
@@ -366,39 +544,82 @@ button,input,select,a{touch-action:manipulation}
   </div>
 </div>
 
+<!-- bulk form -->
+<div class="shade hidden" id="bulkShade" onclick="if(event.target===this)closeBulk()">
+  <div class="sheet" role="dialog" aria-label="Leave for many students">
+    <h2 id="bulkTitle">Same leave for students</h2>
+    <div class="bnames" id="bulkNames"></div>
+    <div class="lbl">Month</div>
+    <div class="seg" id="bMonths"></div>
+    <div class="lbl">Leave type <span class="req">*</span></div>
+    <div class="chips" id="bTypes" style="margin-top:0"></div>
+    <div id="bOtherBox" class="other hidden"><input id="bOther" type="text" placeholder="Type the leave type, e.g. Sports trip"></div>
+    <div class="row dates">
+      <div><div class="lbl">From</div><input id="bFrom" type="date" onchange="bulkDatesChanged()"></div>
+      <div><div class="lbl">To (blank = one day)</div><input id="bTo" type="date" onchange="bulkDatesChanged()"></div>
+    </div>
+    <div id="bNumBox"><div class="lbl">Number of leaves (when no dates)</div><input id="bNum" type="text" inputmode="decimal"></div>
+    <div class="lbl">If a student already has a leave this month</div>
+    <div class="modes">
+      <label><input type="radio" name="bmode" value="add" checked><span><b>Add to it</b><br><small>Dates are combined (a day is counted once) and the type becomes e.g. "Sick Leave + Sports trip".</small></span></label>
+      <label><input type="radio" name="bmode" value="replace"><span><b>Replace it</b><br><small>The old leave of that month is overwritten.</small></span></label>
+    </div>
+    <div class="status" id="bulkStatus" style="margin-top:12px"></div>
+    <div class="acts">
+      <button class="btn" id="bulkSaveBtn" onclick="saveBulk()">Save for all</button>
+      <button class="btn alt" onclick="closeBulk()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast hidden" id="toast"></div>
 
 <script src="sync.js"></script>
 <script>
+/* ================= SETTINGS ================= */
+const SESSION_LIMIT = 15;      // warn when a student's total approved leave days (Sep-Jan) go above this
+const ATT_LIMIT = 75;          // attendance % required
+const MAX_PHOTOS = 3;          // photos per save
+const COLLEGE = "Jinnah College for Women, University of Peshawar";
+
 const MONTHS = ["September","October","November","December","January"];
 const TYPES = ["Medical Leave","Casual Leave","Sick Leave","Emergency Leave","Personal Leave","Improvement Leave","Family Wedding"];
 const NO_NUMBER = ["Emergency Leave","Sick Leave"];
 const DEFAULT_TYPE = "Medical Leave";
 const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MNUM = {September:9,October:10,November:11,December:12,January:1};
 
 // data kept on the phone
 let students = [];        // [{enroll, student, father, classSec, nums:[]}]
+let byEnroll = {};
 let contactLabels = [], contactNote = '';
 let server = {};          // month -> rows as last downloaded from the sheets
 let queue = [];           // changes not yet in the sheets
+let logs = [];            // what was entered on this phone (for Today + undo)
 let me = {teacher:'', username:''};
 let dataAt = 0, lastSync = 0;
 let syncing = false, syncErr = '', authErr = '';
 
 let results = [], student = null, month = null;
 let dates = [];        // [{iso, label}]
+let origIsos = [];     // dates of the leave already saved for this student+month
 let typ = DEFAULT_TYPE;
 let manual = '';
+let photos = [];       // [{data, url}] new photos for this save
 let view = 'entry';
 let recMonth = null, recRows = [];
 let cResults = [];
+let selected = new Set();   // class view ticks (enrolls)
+let repMonth = null;
 
 const $ = id => document.getElementById(id);
-const esc = v => String(v == null ? "" : v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const esc = v => String(v == null ? "" : v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 let _deb = null;
 function debounce(fn){ clearTimeout(_deb); _deb = setTimeout(fn, 160); }
-function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.remove('hidden'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.add('hidden'), 2600); }
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.remove('hidden'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.add('hidden'), 2800); }
 function buzz(){ try{ navigator.vibrate && navigator.vibrate(25); }catch(e){} }
+function num(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function fmtNum(n){ return String(+(+n).toFixed(1)); }
 function ago(ts){
   if(!ts) return 'never';
   const s = Math.round((Date.now() - ts) / 1000);
@@ -407,18 +628,20 @@ function ago(ts){
   if(s < 86400) return Math.round(s/3600) + ' h ago';
   return new Date(ts).toLocaleDateString();
 }
+function clock(ts){ const d = new Date(ts); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   $(id).classList.add('active');
   const inMain = id === 'mainPage';
   $('top').classList.toggle('hidden', !inMain);
-  if(!inMain) $('savebar').classList.add('hidden');
+  if(!inMain){ $('savebar').classList.add('hidden'); $('bulkbar').classList.add('hidden'); }
 }
 function setStatus(msg, cls){ const s = $('status'); s.className = 'status ' + (cls || ''); s.textContent = msg || ''; }
 function syncSavebar(){
   const show = view === 'entry' && student && month && !$('selected').classList.contains('hidden');
   $('savebar').classList.toggle('hidden', !show);
+  $('bulkbar').classList.toggle('hidden', !(view === 'class' && selected.size));
 }
 
 /* ================= START-UP ================= */
@@ -437,20 +660,24 @@ async function boot(){
     const token = await kvGet('token');
     if(!token) return;
     await loadLocal();
-    $('welcome') && ($('welcome').textContent = me.teacher);
     showPage('mainPage'); setView('entry');
-    renderAuth();
+    renderAuth(); renderLogCount();
     trySync();
     if(navigator.onLine && Date.now() - dataAt > 5 * 60000) downloadLatest(true);
   }catch(e){ console.error(e); }
 }
 
+function setStudents(st){
+  contactLabels = (st && st.labels) || [];
+  contactNote = (st && st.note) || '';
+  students = ((st && st.list) || []).map(r => ({enroll:r[0], student:r[1], father:r[2], classSec:r[3], nums:r[4] || []}));
+  byEnroll = {}; students.forEach(s => { if(!byEnroll[s.enroll]) byEnroll[s.enroll] = s; });
+}
 async function loadLocal(){
-  const st = (await kvGet('students')) || {labels:[], list:[]};
-  contactLabels = st.labels || []; contactNote = st.note || '';
-  students = (st.list || []).map(r => ({enroll:r[0], student:r[1], father:r[2], classSec:r[3], nums:r[4] || []}));
+  setStudents((await kvGet('students')) || null);
   server = (await kvGet('months')) || {};
   queue = (await kvGet('queue')) || [];
+  logs = (await kvGet('log')) || [];
   me = (await kvGet('me')) || me;
   dataAt = (await kvGet('dataAt')) || 0;
   lastSync = (await kvGet('lastSync')) || 0;
@@ -467,10 +694,6 @@ async function login(){
   try{
     const r = await apiCall('login', {username: u, password: p});
     if(!r.ok) throw new Error(r.error || 'Login failed');
-    const prev = await kvGet('me');
-    if(prev && prev.username && prev.username.toLowerCase() !== r.username.toLowerCase() && queue.length){
-      // a different person signing in on a phone with waiting leaves: keep them, they will be sent under the new login
-    }
     await kvSet('token', r.token);
     me = {teacher: r.teacher, username: r.username};
     await kvSet('me', me);
@@ -478,9 +701,11 @@ async function login(){
     $('password').value = '';
     loginMsg('Downloading students and leave records…', 'info');
     await downloadAll();
+    queue = (await kvGet('queue')) || [];
+    logs = (await kvGet('log')) || [];
     loginMsg('');
     $('reloginNote').classList.add('hidden');
-    showPage('mainPage'); setView('entry'); renderAuth();
+    showPage('mainPage'); setView('entry'); renderAuth(); renderLogCount();
     trySync();
   }catch(e){
     loginMsg(e.message, 'err');
@@ -494,11 +719,11 @@ async function logout(){
   if(queue.length && !confirm(`${queue.length} leave change${queue.length>1?'s have':' has'} not reached the sheet yet.\nLogging out deletes ${queue.length>1?'them':'it'} from this phone.\n\nLog out anyway?`)) return;
   const token = await kvGet('token');
   if(token && navigator.onLine) apiCall('logout', {token}, 8000).catch(() => {});
-  for(const k of ['token','me','students','months','queue','dataAt','lastSync','authError']) await kvSet(k, null);
-  students = []; server = {}; queue = []; contactLabels = [];
-  results = []; student = null; month = null; dates = []; manual = '';
-  recMonth = null; recRows = []; cResults = [];
-  ['username','password','q','rq','cq'].forEach(i => $(i).value = '');
+  for(const k of ['token','me','students','months','queue','dataAt','lastSync','authError','log','att']) await kvSet(k, null);
+  setStudents(null); server = {}; queue = []; logs = [];
+  results = []; student = null; month = null; dates = []; manual = ''; photos = [];
+  recMonth = null; recRows = []; cResults = []; selected.clear();
+  ['username','password','q','rq','cq','clsQ'].forEach(i => $(i).value = '');
   $('list').innerHTML = ''; $('count').textContent = ''; $('cList').innerHTML = ''; $('cCount').textContent = '';
   $('recList').innerHTML = ''; $('recSum').textContent = ''; $('recStatus').textContent = '';
   $('filters').classList.add('hidden'); $('selected').classList.add('hidden');
@@ -527,8 +752,7 @@ async function downloadAll(){
   const r = await apiCall('data', {token, students: true, months: MONTHS}, 90000);
   if(!r.ok){ if(r.code === 'AUTH') await setAuthError(r.error); throw new Error(r.error || 'Download failed'); }
   await kvSet('students', r.students);
-  contactLabels = r.students.labels || []; contactNote = r.students.note || '';
-  students = (r.students.list || []).map(x => ({enroll:x[0], student:x[1], father:x[2], classSec:x[3], nums:x[4] || []}));
+  setStudents(r.students);
   server = r.months || {};
   await kvSet('months', server);
   dataAt = r.at || Date.now(); await kvSet('dataAt', dataAt);
@@ -554,19 +778,54 @@ async function downloadLatest(quiet){
 }
 async function setAuthError(msg){ authErr = msg || 'Please sign in again.'; await kvSet('authError', authErr); renderAuth(); renderSyncPill(); }
 
-/* ================= WAITING CHANGES (queue) ================= */
+/* ================= WAITING CHANGES (queue) + LOG ================= */
 function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-async function addOp(op){
-  op.id = newId(); op.at = Date.now();
-  await withQueueLock(async () => {
-    const q = (await kvGet('queue')) || [];
-    const keep = q.filter(o => !(o.enroll === op.enroll && o.month === op.month));   // newer change replaces older
-    keep.push(op);
-    await kvSet('queue', keep);
-    queue = keep;
+function snapshot(r){
+  if(!r) return null;
+  return {leaves: r.leaves || '', leaveType: r.leaveType || '', datesK: r.datesK || '', datesShort: r.datesShort || ''};
+}
+function describe(o){
+  if(o.type === 'delete') return 'Removed';
+  const d = o.datesShort ? ` (${o.datesShort})` : '';
+  return `${o.leaveType}${d} · ${o.leaves || '-'} day${o.leaves === '1' ? '' : 's'}`;
+}
+async function addOps(ops, opts){
+  opts = opts || {};
+  const now = Date.now();
+  const newLogs = [];
+  ops.forEach(op => {
+    op.id = newId(); op.at = now;
+    newLogs.push({id: newId(), at: now, opId: op.id, type: op.type, enroll: op.enroll, month: op.month,
+      student: op.student, classSec: op.classSec, text: describe(op), photos: (op.photos || []).length,
+      prev: snapshot(recordOf(op.enroll, op.month)), undoOf: opts.undoOf || null});
   });
-  renderSyncPill(); renderAuth();
+  await withQueueLock(async () => {
+    let q = (await kvGet('queue')) || [];
+    ops.forEach(op => {
+      const old = q.filter(o => o.enroll === op.enroll && o.month === op.month);
+      // photos of a replaced, not-yet-sent save are kept
+      if(op.type === 'save'){
+        const carry = [].concat(...old.map(o => o.photos || []));
+        if(carry.length) op.photos = carry.concat(op.photos || []);
+      }
+      q = q.filter(o => !(o.enroll === op.enroll && o.month === op.month));
+      q.push(op);
+    });
+    await kvSet('queue', q);
+    queue = q;
+  });
+  const weekAgo = now - 7 * 86400000;
+  logs = ((await kvGet('log')) || []).filter(l => l.at > weekAgo).concat(newLogs).slice(-600);
+  await kvSet('log', logs);
+  renderSyncPill(); renderAuth(); renderLogCount();
   requestSync();
+}
+async function dropWaiting(enroll, m){
+  await withQueueLock(async () => {
+    const q = ((await kvGet('queue')) || []).filter(o => !(o.enroll === enroll && o.month === m));
+    await kvSet('queue', q); queue = q;
+  });
+  renderSyncPill();
 }
 async function requestSync(){
   try{
@@ -591,6 +850,7 @@ async function trySync(){
     syncing = false;
     queue = (await kvGet('queue')) || [];
     renderSyncPill(); renderSyncPanel(); renderAuth();
+    if(view === 'log') renderLog();
   }
 }
 async function afterSync(r, fromWorker){
@@ -603,6 +863,7 @@ async function afterSync(r, fromWorker){
     if(!fromWorker || document.visibilityState === 'visible') toast(`✔ ${r.sent} leave change${r.sent>1?'s':''} saved to the sheets`);
     if(student && month && view === 'entry' && !queue.some(o => o.enroll === student.enroll && o.month === month)){
       setStatus(`✔ ${month} leave is in the sheet.`, 'ok');
+      renderProofs();
     }
   }
   if(r.failed) toast(`${r.failed} change${r.failed>1?'s':''} could not be saved. Tap the status to see why.`);
@@ -610,7 +871,9 @@ async function afterSync(r, fromWorker){
 }
 function refreshViews(){
   if(view === 'records' && recMonth){ recRows = effectiveRows(recMonth); renderRecMonths(); renderRecords(true); }
-  if(student) markMonths();
+  if(view === 'class') renderClass();
+  if(view === 'log') renderLog();
+  if(student){ markMonths(); renderHist(); }
 }
 
 function renderSyncPill(){
@@ -643,7 +906,7 @@ function renderSyncPanel(){
   $('qList').innerHTML = (failed ? `<div class="lbl">${failed} could not be saved</div>` : '') +
     queue.map((o, i) => `<div class="qitem ${o.failed ? 'failed' : ''}">
       <b>${o.type === 'delete' ? 'Remove' : 'Save'} · ${esc(o.month.slice(0,3))} · ${esc(o.student || o.enroll)}</b>
-      <small>${o.type === 'delete' ? 'Remove this month\'s leave' : `${esc(o.leaveType)}${o.datesShort ? ' (' + esc(o.datesShort) + ')' : ''} · ${esc(o.leaves || '-')} leave(s)`} · saved ${ago(o.at)}</small>
+      <small>${o.type === 'delete' ? 'Remove this month\'s leave' : esc(describe(o))}${(o.photos||[]).length ? ` · ${(o.photos||[]).length} photo(s)` : ''} · saved ${ago(o.at)}</small>
       ${o.failed ? `<div class="e">${esc(o.error || 'Not saved')}</div><div class="qa"><button class="btn sm" onclick="retryOp(${i})">Try again</button><button class="btn alt sm" onclick="discardOp(${i})">Discard</button></div>` : ''}
     </div>`).join('');
 }
@@ -677,17 +940,17 @@ async function askNotify(){
 /* ================= VIEWS ================= */
 function setView(v){
   view = v;
-  $('entryView').classList.toggle('hidden', v !== 'entry');
-  $('recordsView').classList.toggle('hidden', v !== 'records');
-  $('contactsView').classList.toggle('hidden', v !== 'contacts');
-  $('tabEntry').classList.toggle('on', v === 'entry');
-  $('tabRecords').classList.toggle('on', v === 'records');
-  $('tabContacts').classList.toggle('on', v === 'contacts');
+  ['entry','records','class','contacts','reports','log'].forEach(x => $(x + 'View').classList.toggle('hidden', x !== v));
+  document.querySelectorAll('#tabs .tab').forEach(t => t.classList.toggle('on', t.dataset.v === v));
+  const tab = document.querySelector(`#tabs .tab[data-v="${v}"]`); if(tab && tab.scrollIntoView) tab.scrollIntoView({inline:'nearest', block:'nearest'});
   syncSavebar();
   renderSyncPill();
   window.scrollTo({top:0});
   if(v === 'records') initRecords();
+  if(v === 'class') initClass();
   if(v === 'contacts' && !$('cq').value) renderContactsHint();
+  if(v === 'reports') initReports();
+  if(v === 'log'){ if(!$('logDay').value) $('logDay').value = isoOf(new Date()); renderLog(); }
 }
 
 /* ================= SEARCH (on the phone) ================= */
@@ -702,9 +965,10 @@ function findStudents(q, withFather){
   }
   return out;
 }
+function noListMsg(){ return '<span class="err">No student list on this phone yet. Connect to the internet, tap the status button, then "Download latest from sheets".</span>'; }
 function search(){
   const q = $('q').value.trim();
-  if(!students.length){ $('count').innerHTML = '<span class="err">No student list on this phone yet. Connect to the internet and tap the status button, then "Download latest".</span>'; return; }
+  if(!students.length){ $('count').innerHTML = noListMsg(); return; }
   if(q.length < 2){ results = []; $('list').innerHTML = ''; $('count').textContent = q ? 'Keep typing…' : ''; $('filters').classList.add('hidden'); return; }
   results = findStudents(q, false);
   const classes = [...new Set(results.map(x => x.classSec).filter(Boolean))].sort();
@@ -732,13 +996,13 @@ function openStudent(s){
   $('sName').textContent = student.student;
   $('sMeta').textContent = `Father: ${student.father || '-'} · ${student.classSec || '-'} · #${student.enroll}`;
   $('months').innerHTML = MONTHS.map(m => `<button data-m="${m}" onclick="pickMonth('${m}')">${m.slice(0,3)}</button>`).join('');
-  markMonths();
+  markMonths(); renderHist();
+  $('attBox').classList.add('hidden');
   $('form').classList.add('hidden'); setStatus('');
   $('selected').classList.remove('hidden');
   syncSavebar();
   if(window.matchMedia('(max-width:820px)').matches){ $('findCard').classList.add('hidden'); window.scrollTo({top:0}); }
 }
-// small dot on months where this student already has a leave
 function markMonths(){
   if(!student) return;
   document.querySelectorAll('#months button').forEach(b => {
@@ -748,6 +1012,20 @@ function markMonths(){
 function changeStudent(){
   $('findCard').classList.remove('hidden'); $('selected').classList.add('hidden'); syncSavebar();
   window.scrollTo({top:0});
+}
+
+/* ---------- leave history across the session ---------- */
+function monthDays(enroll, m){ const r = recordOf(enroll, m); return r ? num(r.leaves) : 0; }
+function sessionDays(enroll){ return MONTHS.reduce((a, m) => a + monthDays(enroll, m), 0); }
+function renderHist(){
+  if(!student) return;
+  const tot = sessionDays(student.enroll);
+  $('hist').innerHTML = MONTHS.map(m => {
+    const d = monthDays(student.enroll, m);
+    return `<div class="${d ? '' : 'z'}"><small>${m.slice(0,3)}</small><b>${fmtNum(d)}</b></div>`;
+  }).join('') + `<div class="tot ${tot > SESSION_LIMIT ? 'over' : ''}"><small>Total</small><b>${fmtNum(tot)}</b></div>`;
+  $('histNote').textContent = tot > SESSION_LIMIT ? `Above the ${SESSION_LIMIT}-day limit for the session.` : '';
+  $('histNote').classList.toggle('hidden', !(tot > SESSION_LIMIT));
 }
 
 /* ---------- type ---------- */
@@ -767,17 +1045,17 @@ function numberRequired(){ return NO_NUMBER.indexOf(typ) === -1; }
 function dayCount(){ return dates.filter(d => d.iso).length; }
 function onManual(){ manual = $('leaves').value; $('leaves').classList.remove('invalid-field'); updateCount(); }
 function updateCount(){
-  const n = dayCount(), inp = $('leaves'), num = $('slipNum');
+  const n = dayCount(), inp = $('leaves'), numEl = $('slipNum');
   if(n > 0){
     inp.classList.add('hidden');
-    num.textContent = n; num.classList.remove('dim');
+    numEl.textContent = n; numEl.classList.remove('dim');
     $('slipTitle').textContent = n === 1 ? 'Approved leave: 1 day' : `Approved leaves: ${n} days`;
     $('slipNote').textContent = 'Counted from the dates above. Remove the dates to type a number by hand.';
   } else {
     inp.classList.remove('hidden');
     if(inp.value !== manual) inp.value = manual;
     const v = manual.trim();
-    num.textContent = v === '' ? '–' : v; num.classList.toggle('dim', v === '');
+    numEl.textContent = v === '' ? '–' : v; numEl.classList.toggle('dim', v === '');
     $('slipTitle').innerHTML = 'Approved leaves' + (numberRequired() ? ' <span class="req">*</span>' : '');
     $('slipNote').textContent = numberRequired() ? 'No dates selected. Type the number of leaves.' : 'No dates selected. Number is optional for this type.';
     inp.placeholder = 'Number of leaves';
@@ -796,20 +1074,34 @@ function isoOf(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(
 function expandRange(from, to){
   const out = [], start = new Date(from + 'T00:00:00'), end = new Date(to + 'T00:00:00');
   const days = Math.round((end - start) / 86400000) + 1;
-  for(let i = 0; i < days; i++) out.push(isoOf(new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)));
+  for(let i = 0; i < days && i < 400; i++) out.push(isoOf(new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)));
   return out;
 }
+// "10-Oct-2026 to 12-Oct-2026, 15-Oct-2026" -> [{iso,label}], unknown parts kept as {iso:null,label}
+function parseDates(str){
+  const out = [];
+  String(str || '').split(',').map(s => s.trim()).filter(Boolean).forEach(part => {
+    const bits = part.split(/\s+to\s+/i);
+    const a = parseLabel(bits[0]), b = bits[1] ? parseLabel(bits[1]) : a;
+    if(a && b && b >= a) expandRange(a, b).forEach(iso => { if(!out.some(x => x.iso === iso)) out.push({iso, label: fmtISO(iso)}); });
+    else out.push({iso: null, label: part});
+  });
+  return sortDates(out);
+}
+function sortDates(list){ return list.sort((a,b) => (a.iso || 'zzzz').localeCompare(b.iso || 'zzzz')); }
 function addIsos(list){
   list.forEach(iso => { if(!dates.some(x => x.iso === iso)) dates.push({iso, label: fmtISO(iso)}); });
-  dates.sort((a,b) => (a.iso || 'zzzz').localeCompare(b.iso || 'zzzz'));
+  sortDates(dates);
 }
 let live = [];
-const MNUM = {September:9,October:10,November:11,December:12,January:1};
-function setMonthLimits(m){
+function monthBounds(m){
   const now = new Date(), start = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
   const mm = MNUM[m], y = mm === 1 ? start + 1 : start, p = String(mm).padStart(2,'0');
-  const min = `${y}-${p}-01`, max = `${y}-${p}-${String(new Date(y, mm, 0).getDate()).padStart(2,'0')}`;
-  ['dFrom','dTo'].forEach(i => { $(i).min = min; $(i).max = max; $(i).value = ''; });
+  return {min: `${y}-${p}-01`, max: `${y}-${p}-${String(new Date(y, mm, 0).getDate()).padStart(2,'0')}`};
+}
+function setMonthLimits(m){
+  const b = monthBounds(m);
+  ['dFrom','dTo'].forEach(i => { $(i).min = b.min; $(i).max = b.max; $(i).value = ''; });
   live = []; $('moreBtn').classList.add('hidden');
 }
 function rangeChanged(src){
@@ -818,21 +1110,32 @@ function rangeChanged(src){
   t.min = f.value || f.min;
   dates = dates.filter(d => live.indexOf(d.iso) === -1);
   live = [];
+  let clash = [];
   if(f.value){
     const list = expandRange(f.value, t.value || f.value);
+    clash = list.filter(i => dates.some(d => d.iso === i));
     live = list.filter(i => !dates.some(d => d.iso === i));
     addIsos(list);
   }
+  showClash(clash);
   $('moreBtn').classList.toggle('hidden', !f.value);
   renderDates();
 }
+function showClash(list){
+  const el = $('clash');
+  if(!list.length){ el.classList.add('hidden'); return; }
+  const saved = list.filter(i => origIsos.indexOf(i) > -1);
+  const lbl = groupDatesOf(list.map(iso => ({iso}))).map(groupShort).join(', ');
+  el.textContent = `${lbl} ${saved.length ? 'already approved for this student' : 'already picked'}. Each day is counted once.`;
+  el.classList.remove('hidden');
+}
 function newRange(){
   live = []; $('dFrom').value = ''; $('dTo').value = ''; $('dTo').min = $('dFrom').min;
-  $('moreBtn').classList.add('hidden');
+  $('moreBtn').classList.add('hidden'); $('clash').classList.add('hidden');
 }
-function groupDates(){
+function groupDatesOf(list){
   const groups = []; let cur = null;
-  dates.forEach(d => {
+  list.forEach(d => {
     if(!d.iso){ cur = null; groups.push({raw: d.label}); return; }
     const prev = cur ? cur.isos[cur.isos.length - 1] : null;
     if(cur && expandRange(prev, d.iso).length === 2) cur.isos.push(d.iso);
@@ -840,6 +1143,7 @@ function groupDates(){
   });
   return groups;
 }
+function groupDates(){ return groupDatesOf(dates); }
 function shortDay(iso){ const [,m,d] = iso.split('-'); return {d:+d, m:MON[+m-1].toUpperCase()}; }
 function groupShort(g){
   if(g.raw) return g.raw;
@@ -852,27 +1156,20 @@ function groupFull(g){
   const a = fmtISO(g.isos[0]), b = fmtISO(g.isos[g.isos.length-1]);
   return g.isos.length === 1 ? a : `${a} to ${b}`;
 }
-function datesShort(){ return groupDates().map(groupShort).join(', '); }
-function datesFull(){ return groupDates().map(groupFull).join(', '); }
+function datesShortOf(list){ return groupDatesOf(list).map(groupShort).join(', '); }
+function datesFullOf(list){ return groupDatesOf(list).map(groupFull).join(', '); }
+function datesShort(){ return datesShortOf(dates); }
+function datesFull(){ return datesFullOf(dates); }
 function removeGroup(gi){
   const g = groupDates()[gi]; if(!g) return;
   dates = dates.filter(d => g.raw ? d.label !== g.raw : g.isos.indexOf(d.iso) === -1);
+  $('clash').classList.add('hidden');
   renderDates();
 }
 function renderDates(){
   $('dchips').innerHTML = groupDates().map((g, i) =>
     `<span class="dchip">${esc(groupShort(g))}<button type="button" onclick="removeGroup(${i})" aria-label="Remove ${esc(groupShort(g))}">×</button></span>`).join('');
   updateCount();
-}
-function loadDates(str){
-  dates = [];
-  String(str || '').split(',').map(s => s.trim()).filter(Boolean).forEach(part => {
-    const bits = part.split(/\s+to\s+/i);
-    const a = parseLabel(bits[0]), b = bits[1] ? parseLabel(bits[1]) : a;
-    if(a && b && b >= a) addIsos(expandRange(a, b));
-    else dates.push({iso: null, label: part});
-  });
-  renderDates();
 }
 function cleanType(t){
   let s = String(t || '').split(/\r?\n/)[0].trim();
@@ -891,7 +1188,8 @@ function effectiveRows(m){
     const row = {
       enroll: o.enroll, student: o.student, father: o.father, classSec: o.classSec,
       leaves: o.leaves, teacher: me.teacher, leaveType: o.leaveType,
-      datesShort: o.datesShort, datesFull: o.datesFull, datesK: o.datesFull, pending: true
+      datesShort: o.datesShort, datesFull: o.datesFull, datesK: o.datesFull, pending: true,
+      proofs: i > -1 ? (rows[i].proofs || []) : [], pendingPhotos: (o.photos || []).length
     };
     if(i > -1) rows[i] = row; else rows.push(row);
   });
@@ -899,6 +1197,11 @@ function effectiveRows(m){
   return rows;
 }
 function recordOf(enroll, m){ return effectiveRows(m).find(r => r.enroll === enroll) || null; }
+function allRecordsMap(){
+  const map = {};
+  MONTHS.forEach(m => effectiveRows(m).forEach(r => { (map[r.enroll] = map[r.enroll] || {})[m] = r; }));
+  return map;
+}
 
 /* ---------- month ---------- */
 function pickMonth(m){
@@ -907,21 +1210,64 @@ function pickMonth(m){
   $('form').classList.remove('hidden');
   manual = ''; $('leaves').value = ''; $('lother').value = '';
   setMonthLimits(m);
-  dates = []; typ = DEFAULT_TYPE;
+  dates = []; typ = DEFAULT_TYPE; photos = []; origIsos = [];
+  $('clash').classList.add('hidden');
   const r = recordOf(student.enroll, m);
   if(r){
     manual = r.leaves || '';
-    loadDates(r.datesK);
+    dates = parseDates(r.datesK);
+    origIsos = dates.filter(d => d.iso).map(d => d.iso);
     const t = cleanType(r.leaveType) || DEFAULT_TYPE;
     const known = TYPES.find(x => x.toLowerCase() === t.toLowerCase());
     if(known) typ = known; else { typ = 'Other'; $('lother').value = t; }
-  } else renderDates();
-  renderTypes(); updateCount();
+  }
+  renderDates(); renderTypes(); updateCount(); renderThumbs(); renderProofs();
   $('saveBtn').disabled = false;
   syncSavebar();
   if(!r) setStatus(`No ${m} entry yet.`, 'info');
   else if(r.pending) setStatus(`${m} entry is on this phone, waiting to reach the sheet. Saving will update it.`, 'waitc');
   else setStatus(`${m} entry loaded. Saving will update it.`, 'info');
+}
+
+/* ---------- photos ---------- */
+function shrinkImage(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const max = 1600, k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      const dataUrl = c.toDataURL('image/jpeg', 0.72);
+      res({data: dataUrl.split(',')[1], url: dataUrl});
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Could not read that picture.')); };
+    img.src = url;
+  });
+}
+async function addPhotos(input){
+  const files = [...(input.files || [])];
+  input.value = '';
+  for(const f of files){
+    if(photos.length >= MAX_PHOTOS){ toast(`Up to ${MAX_PHOTOS} photos per save.`); break; }
+    try{ photos.push(await shrinkImage(f)); }catch(e){ toast(e.message); }
+  }
+  renderThumbs();
+}
+function removePhoto(i){ photos.splice(i, 1); renderThumbs(); }
+function renderThumbs(){
+  $('thumbs').innerHTML = photos.map((p, i) => `<div class="thumb"><img src="${p.url}" alt="Application photo ${i+1}"><button type="button" onclick="removePhoto(${i})" aria-label="Remove photo">×</button></div>`).join('');
+}
+function renderProofs(){
+  if(!student || !month){ $('proofs').innerHTML = ''; return; }
+  const r = recordOf(student.enroll, month);
+  const links = (r && r.proofs) || [], wait = (r && r.pendingPhotos) || 0;
+  let h = '';
+  if(links.length) h += 'Already attached: ' + links.map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">Photo ${i+1}</a>`).join('');
+  if(wait) h += `${h ? '<br>' : ''}${wait} photo${wait > 1 ? 's' : ''} waiting to upload.`;
+  $('proofs').innerHTML = h;
 }
 
 /* ---------- save (to the phone first) ---------- */
@@ -942,22 +1288,79 @@ async function save(){
     $('leaves').classList.add('invalid-field'); $('leaves').focus();
     return setStatus(`Enter the number of leaves for ${type}, or add dates.`, 'err');
   }
+  const after = sessionDays(student.enroll) - monthDays(student.enroll, month) + num(leaves);
+  if(after > SESSION_LIMIT && !confirm(`${student.student} will have ${fmtNum(after)} approved leave days this session, above the ${SESSION_LIMIT}-day limit.\n\nSave anyway?`)) return;
 
   $('saveBtn').disabled = true;
   try{
-    await addOp({
+    const nPhotos = photos.length;
+    await addOps([{
       type: 'save', enroll: student.enroll, month,
       leaves, leaveType: type, datesFull: datesFull(), datesShort: datesShort(),
-      student: student.student, father: student.father, classSec: student.classSec
-    });
+      student: student.student, father: student.father, classSec: student.classSec,
+      photos: photos.map(p => ({data: p.data}))
+    }]);
+    photos = []; renderThumbs(); renderProofs();
+    origIsos = dates.filter(d => d.iso).map(d => d.iso);
     buzz();
-    markMonths();
-    setStatus(navigator.onLine ? `✔ Saved. Sending ${month} leave to the sheet…` : `✔ Saved on this phone. It will reach the sheet when you are online.`, 'ok');
+    markMonths(); renderHist();
+    const ph = nPhotos ? ` with ${nPhotos} photo${nPhotos > 1 ? 's' : ''}` : '';
+    setStatus(navigator.onLine ? `✔ Saved${ph}. Sending ${month} leave to the sheet…` : `✔ Saved${ph} on this phone. It will reach the sheet when you are online.`, 'ok');
   }catch(e){
     setStatus('Could not save on this phone: ' + e.message, 'err');
   }finally{
     $('saveBtn').disabled = false;
   }
+}
+
+/* ================= ATTENDANCE (shortage check) ================= */
+function monthsSoFar(){
+  const now = new Date().getMonth();
+  if(now >= 1 && now <= 7) return MONTHS.slice();               // Feb-Aug: whole session
+  return MONTHS.slice(0, MONTHS.indexOf(currentMonthName()) + 1);
+}
+async function checkAttendance(){
+  if(!student) return;
+  const box = $('attBox'), s = student;
+  box.classList.remove('hidden');
+  const cache = (await kvGet('att')) || {};
+  const hit = cache[s.enroll];
+  if(!navigator.onLine){
+    if(hit) return renderAttendance(hit.months, `Saved ${ago(hit.at)} (no internet now).`);
+    box.innerHTML = '<h2>Attendance</h2><p class="sub">Needs internet the first time. Try again when online.</p>';
+    return;
+  }
+  box.innerHTML = '<h2>Attendance</h2><p class="sub">Reading the shortage sheets…</p>';
+  try{
+    const token = await kvGet('token');
+    const r = await apiCall('attendance', {token, enroll: s.enroll, classSec: s.classSec, months: monthsSoFar()}, 90000);
+    if(!r.ok){ if(r.code === 'AUTH') await setAuthError(r.error); throw new Error(r.error || 'Could not read attendance'); }
+    cache[s.enroll] = {at: r.at || Date.now(), months: r.months};
+    await kvSet('att', cache);
+    if(student === s) renderAttendance(r.months, 'Just now.');
+  }catch(e){
+    if(hit) renderAttendance(hit.months, `Saved ${ago(hit.at)}. Could not refresh: ${e.message}`);
+    else box.innerHTML = `<h2>Attendance</h2><p class="sub err">${esc(e.message)}</p>`;
+  }
+}
+function pct(a, t){ return t ? Math.min(100, a / t * 100) : 0; }
+function renderAttendance(list, when){
+  const s = student;
+  let T = 0, A = 0, L = 0;
+  const rows = (list || []).map(m => {
+    const lv = monthDays(s.enroll, m.month);
+    if(!m.subjects || !m.subjects.length) return `<tr><td>${esc(m.month.slice(0,3))}</td><td colspan="3" class="note">${esc(m.note || 'No data')}</td></tr>`;
+    const t = m.subjects.reduce((x, y) => x + y.t, 0), a = m.subjects.reduce((x, y) => x + y.a, 0);
+    T += t; A += a; L += lv;
+    const p1 = pct(a, t), p2 = pct(a + lv, t);
+    const low = m.subjects.filter(x => pct(x.a + lv, x.t) < ATT_LIMIT).map(x => `${x.s} ${Math.round(pct(x.a + lv, x.t))}%`);
+    return `<tr><td>${esc(m.month.slice(0,3))}</td><td class="n">${a}/${t}</td><td class="n ${p1 < ATT_LIMIT ? 'low' : 'okp'}">${Math.round(p1)}%</td><td class="n ${p2 < ATT_LIMIT ? 'low' : 'okp'}">${Math.round(p2)}%${lv ? ` <small>(+${fmtNum(lv)})</small>` : ''}</td></tr>`
+      + (low.length ? `<tr><td></td><td colspan="3" class="subs">Below ${ATT_LIMIT}%: ${esc(low.join(', '))}</td></tr>` : '');
+  }).join('');
+  const tot = T ? `<tr><th>All</th><td class="n">${A}/${T}</td><td class="n ${pct(A,T) < ATT_LIMIT ? 'low' : 'okp'}">${Math.round(pct(A,T))}%</td><td class="n ${pct(A+L,T) < ATT_LIMIT ? 'low' : 'okp'}">${Math.round(pct(A+L,T))}%</td></tr>` : '';
+  $('attBox').innerHTML = `<div class="rechead"><div><h2>Attendance</h2><p class="sub">From the shortage sheets (${esc(s.classSec)}). "With leave" adds the approved leave days to attended lectures, as in the shortage report. ${esc(when)}</p></div>
+    <button class="btn alt sm" onclick="$('attBox').classList.add('hidden')">Close</button></div>
+    <table><thead><tr><th>Month</th><th style="text-align:right">Attended</th><th style="text-align:right">%</th><th style="text-align:right">With leave</th></tr></thead><tbody>${rows}${tot}</tbody></table>`;
 }
 
 /* ================= RECORDS ================= */
@@ -1002,11 +1405,11 @@ function renderRecords(rebuildClasses){
   const shown = recRows.map((r, i) => ({r, i})).filter(({r}) =>
     (!c || r.classSec === c) &&
     (!q || (r.student + ' ' + r.father + ' ' + r.enroll).toLowerCase().includes(q)));
-  const days = shown.reduce((a, {r}) => a + (parseFloat(r.leaves) || 0), 0);
+  const days = shown.reduce((a, {r}) => a + num(r.leaves), 0);
   const pend = recRows.filter(r => r.pending).length;
   const filtered = shown.length !== recRows.length;
   $('recSum').textContent = recRows.length
-    ? `${recMonth}: ${shown.length} student${shown.length === 1 ? '' : 's'}, ${+days.toFixed(1)} leave days` + (filtered ? ` (filtered from ${recRows.length})` : '') + (pend ? ` · ${pend} waiting to send` : '')
+    ? `${recMonth}: ${shown.length} student${shown.length === 1 ? '' : 's'}, ${fmtNum(days)} leave days` + (filtered ? ` (filtered from ${recRows.length})` : '') + (pend ? ` · ${pend} waiting to send` : '')
     : '';
   if(!shown.length){
     $('recList').innerHTML = `<div class="recmsg">${recRows.length ? 'No records match the filter.' : `No leaves marked for ${esc(recMonth)} yet.`}</div>`;
@@ -1014,49 +1417,180 @@ function renderRecords(rebuildClasses){
   }
   $('recList').innerHTML = shown.map(({r, i}) => {
     const hasNum = String(r.leaves).trim() !== '';
+    const pr = (r.proofs || []).map((u, k) => `<a href="${esc(u)}" target="_blank" rel="noopener">📎 Photo ${k+1}</a>`).join(' ');
     return `<div class="rec">
       <span class="av">${esc(initials(r.student))}</span>
       <div class="who2"><b>${esc(r.student)}</b><small>D/o ${esc(r.father || '-')} · ${esc(r.classSec || '-')} · #${esc(r.enroll)}</small></div>
       <div class="info"><span class="pill">${esc(r.leaveType || '-')}</span>${r.pending ? ' <span class="pill wait">⏳ waiting</span>' : ''}
         ${r.datesShort ? `<small title="${esc(r.datesFull)}">${esc(r.datesShort)}</small>` : ''}
-        ${r.teacher ? `<small>by ${esc(r.teacher)}</small>` : ''}</div>
+        ${r.teacher ? `<small>by ${esc(r.teacher)}</small>` : ''}${pr ? `<small>${pr}</small>` : ''}</div>
       <div class="rnum ${hasNum ? '' : 'none'}" title="Approved leaves">${hasNum ? esc(r.leaves) : '–'}</div>
       <div class="act">
         <button type="button" onclick="editRec(${i})">Edit</button>
+        <button type="button" onclick="recParent(${i})">WhatsApp</button>
         <button type="button" class="x" title="Remove this leave" aria-label="Remove leave of ${esc(r.student)}" onclick="removeRec(${i})">×</button>
       </div>
     </div>`;
   }).join('');
 }
 function recMsg(msg, cls){ const s = $('recStatus'); s.className = 'recstatus ' + (cls || ''); s.textContent = msg || ''; }
+function recParent(i){ const r = recRows[i]; if(r) parentMsgFor(r.enroll, recMonth, r); }
 
+async function removeLeave(r, m, opts){
+  const inSheet = (server[m] || []).some(x => x.enroll === r.enroll);
+  if(inSheet) await addOps([{type: 'delete', enroll: r.enroll, month: m, student: r.student, father: r.father, classSec: r.classSec}], opts);
+  else {
+    // only on this phone: drop the waiting save, but still log it so it can be undone
+    const prev = snapshot(recordOf(r.enroll, m));
+    await dropWaiting(r.enroll, m);
+    logs = ((await kvGet('log')) || []).concat([{id: newId(), at: Date.now(), opId: null, type: 'delete', enroll: r.enroll, month: m,
+      student: r.student, classSec: r.classSec, text: 'Removed (was not sent yet)', photos: 0, prev, undoOf: (opts && opts.undoOf) || null}]);
+    await kvSet('log', logs); renderLogCount();
+  }
+  return inSheet;
+}
 async function removeRec(i){
   const r = recRows[i], m = recMonth;
   if(!r) return;
-  if(!confirm(`Remove ${m} leave of ${r.student}?\n\n${r.leaveType || 'Leave'}${r.datesShort ? ' (' + r.datesShort + ')' : ''}, ${r.leaves || '-'} leave(s).`)) return;
-  const inSheet = (server[m] || []).some(x => x.enroll === r.enroll);
-  if(inSheet){
-    await addOp({type: 'delete', enroll: r.enroll, month: m, student: r.student, father: r.father, classSec: r.classSec});
-  } else {
-    // only on this phone: just drop the waiting save
-    await withQueueLock(async () => {
-      const q = ((await kvGet('queue')) || []).filter(o => !(o.enroll === r.enroll && o.month === m));
-      await kvSet('queue', q); queue = q;
-    });
-    renderSyncPill();
-  }
+  if(!confirm(`Remove ${m} leave of ${r.student}?\n\n${r.leaveType || 'Leave'}${r.datesShort ? ' (' + r.datesShort + ')' : ''}, ${r.leaves || '-'} leave(s).\nYou can undo this from the Today tab.`)) return;
+  const inSheet = await removeLeave(r, m);
   buzz();
   loadRecords(m);
   recMsg(`✔ Removed ${m} leave of ${r.student}` + (inSheet ? (navigator.onLine ? '. Updating the sheet…' : '. The sheet will update when you are online.') : '.'), 'ok');
   if(student && month === m && student.enroll === r.enroll) pickMonth(m);
 }
-
+function studentObj(enroll, fallback){
+  return byEnroll[enroll] || Object.assign({enroll, nums: []}, fallback || {});
+}
 function editRec(i){
   const r = recRows[i]; if(!r) return;
+  openFromAnywhere(r.enroll, recMonth, r);
+}
+function openFromAnywhere(enroll, m, r){
   setView('entry');
-  const s = students.find(x => x.enroll === r.enroll) || {enroll: r.enroll, student: r.student, father: r.father, classSec: r.classSec, nums: []};
-  openStudent(s);
-  pickMonth(recMonth);
+  openStudent(studentObj(enroll, r ? {student: r.student, father: r.father, classSec: r.classSec} : null));
+  if(m) pickMonth(m);
+}
+
+/* ================= CLASS VIEW + MANY STUDENTS ================= */
+function initClass(){
+  if(!students.length){ $('clsList').innerHTML = `<div class="recmsg">${noListMsg()}</div>`; return; }
+  const classes = [...new Set(students.map(s => s.classSec).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+  const cur = $('clsSel').value || (student && student.classSec) || classes[0];
+  $('clsSel').innerHTML = classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if(classes.includes(cur)) $('clsSel').value = cur;
+  renderClass();
+}
+let clsShown = [];
+function renderClass(){
+  const c = $('clsSel').value, q = norm($('clsQ').value);
+  const map = allRecordsMap();
+  clsShown = students.filter(s => s.classSec === c && (!q || norm(s.student + ' ' + s.father + ' ' + s.enroll).includes(q)))
+    .sort((a, b) => String(a.student).localeCompare(String(b.student)));
+  let withLeave = 0, days = 0;
+  $('clsHead').innerHTML = MONTHS.map(m => `<span>${m[0]}</span>`).join('') + '<b>Total</b>';
+  $('clsList').innerHTML = clsShown.map((s, i) => {
+    const rec = map[s.enroll] || {};
+    const per = MONTHS.map(m => rec[m] ? num(rec[m].leaves) : 0);
+    const tot = per.reduce((a, b) => a + b, 0);
+    if(Object.keys(rec).length) withLeave++;
+    days += tot;
+    return `<div class="crow">
+      <input type="checkbox" ${selected.has(s.enroll) ? 'checked' : ''} onchange="toggleSel(${i}, this.checked)" aria-label="Select ${esc(s.student)}">
+      <button class="nm" onclick="openClassStudent(${i})"><b>${esc(s.student)}</b><small>D/o ${esc(s.father || '-')} · #${esc(s.enroll)}</small></button>
+      <div class="mini">${per.map((d, k) => `<span class="${d || rec[MONTHS[k]] ? 'y' : ''}">${d ? fmtNum(d) : (rec[MONTHS[k]] ? '·' : '')}</span>`).join('')}<b class="${tot > SESSION_LIMIT ? 'over' : ''}">${fmtNum(tot)}</b></div>
+    </div>`;
+  }).join('') || '<div class="recmsg">No students match.</div>';
+  $('clsSum').textContent = clsShown.length ? `${c}: ${clsShown.length} students · ${withLeave} with leave · ${fmtNum(days)} leave days` : '';
+  renderSelCount();
+}
+function openClassStudent(i){ const s = clsShown[i]; if(s) openFromAnywhere(s.enroll); }
+function toggleSel(i, on){ const s = clsShown[i]; if(!s) return; if(on) selected.add(s.enroll); else selected.delete(s.enroll); renderSelCount(); }
+function selectAllVisible(on){ clsShown.forEach(s => on ? selected.add(s.enroll) : selected.delete(s.enroll)); renderClass(); }
+function clearSelection(){ selected.clear(); if(view === 'class') renderClass(); renderSelCount(); }
+function renderSelCount(){
+  const n = selected.size;
+  $('selCount').textContent = n; $('selCount').classList.toggle('hidden', !n);
+  $('bulkText').textContent = `${n} student${n === 1 ? '' : 's'} selected`;
+  syncSavebar();
+}
+
+let bMonth = null, bTyp = DEFAULT_TYPE;
+function openBulk(){
+  if(!selected.size) return;
+  const list = [...selected].map(e => byEnroll[e]).filter(Boolean);
+  $('bulkTitle').textContent = `Same leave for ${list.length} student${list.length === 1 ? '' : 's'}`;
+  $('bulkNames').textContent = list.map(s => `${s.student} (${s.classSec})`).join(', ');
+  bMonth = bMonth || currentMonthName();
+  renderBulkMonths(); renderBulkTypes();
+  $('bOther').value = ''; $('bNum').value = ''; $('bulkStatus').textContent = '';
+  $('bulkShade').classList.remove('hidden');
+}
+function closeBulk(){ $('bulkShade').classList.add('hidden'); }
+function setBulkMonth(i){ bMonth = MONTHS[i]; renderBulkMonths(); }
+function setBulkType(i){ bTyp = TYPES.concat(['Other'])[i]; renderBulkTypes(); }
+function renderBulkMonths(){
+  $('bMonths').innerHTML = MONTHS.map((m, i) => `<button class="${m === bMonth ? 'on' : ''}" onclick="setBulkMonth(${i})">${m.slice(0,3)}</button>`).join('');
+  const b = monthBounds(bMonth);
+  ['bFrom','bTo'].forEach(i => { $(i).min = b.min; $(i).max = b.max; if($(i).value && ($(i).value < b.min || $(i).value > b.max)) $(i).value = ''; });
+  bulkDatesChanged();
+}
+function renderBulkTypes(){
+  $('bTypes').innerHTML = TYPES.concat(['Other']).map((t, i) =>
+    `<button class="chip ${t === bTyp ? 'on' : ''}" onclick="setBulkType(${i})">${t === 'Other' ? 'Other…' : esc(t)}</button>`).join('');
+  $('bOtherBox').classList.toggle('hidden', bTyp !== 'Other');
+}
+function bulkDatesChanged(){
+  if($('bTo').value && $('bFrom').value && $('bTo').value < $('bFrom').value) $('bTo').value = '';
+  $('bNumBox').classList.toggle('hidden', !!$('bFrom').value);
+}
+// combine an existing record with new leave (mode "add")
+function mergeLeave(prev, add){
+  const pd = parseDates(prev.datesK), nd = add.dates;
+  const pIsos = pd.filter(d => d.iso), pRaw = pd.filter(d => !d.iso);
+  const list = sortDates(pd.concat(nd.filter(d => !pd.some(x => x.iso === d.iso))));
+  let leaves;
+  if(nd.length && pIsos.length && !pRaw.length && num(prev.leaves) === pIsos.length){
+    leaves = String(list.filter(d => d.iso).length);           // both dated: count each day once
+  } else {
+    const extra = nd.length ? nd.filter(d => !pIsos.some(x => x.iso === d.iso)).length : num(add.leaves);
+    leaves = String(+(num(prev.leaves) + extra).toFixed(1));
+    if(leaves === '0') leaves = prev.leaves || add.leaves || '';
+  }
+  const pt = String(prev.leaveType || '').trim();
+  const same = !pt || pt.split(' + ').some(x => x.toLowerCase() === add.leaveType.toLowerCase());
+  return {leaves, leaveType: same ? (pt || add.leaveType) : `${pt} + ${add.leaveType}`, datesFull: datesFullOf(list), datesShort: datesShortOf(list)};
+}
+async function saveBulk(){
+  const type = bTyp === 'Other' ? $('bOther').value.trim() : bTyp;
+  const st = (msg, cls) => { $('bulkStatus').className = 'status ' + (cls || ''); $('bulkStatus').textContent = msg; };
+  if(!type) return st('Type the leave type for "Other".', 'err');
+  const from = $('bFrom').value, to = $('bTo').value || from;
+  const nd = from ? expandRange(from, to).map(iso => ({iso, label: fmtISO(iso)})) : [];
+  const n = $('bNum').value.trim();
+  if(!nd.length && n !== '' && !/^\d+(\.\d+)?$/.test(n)) return st('Number of leaves must be a number.', 'err');
+  if(!nd.length && n === '' && NO_NUMBER.indexOf(type) === -1) return st(`Pick dates or type the number of leaves for ${type}.`, 'err');
+  const mode = document.querySelector('input[name=bmode]:checked').value;
+  const add = {dates: nd, leaves: nd.length ? String(nd.length) : n, leaveType: type};
+  const list = [...selected].map(e => byEnroll[e]).filter(Boolean);
+  const ops = [], over = [];
+  list.forEach(s => {
+    const prev = recordOf(s.enroll, bMonth);
+    const v = (prev && mode === 'add') ? mergeLeave(prev, add)
+      : {leaves: add.leaves, leaveType: type, datesFull: datesFullOf(nd), datesShort: datesShortOf(nd)};
+    const after = sessionDays(s.enroll) - monthDays(s.enroll, bMonth) + num(v.leaves);
+    if(after > SESSION_LIMIT) over.push(`${s.student} (${fmtNum(after)})`);
+    ops.push(Object.assign({type: 'save', enroll: s.enroll, month: bMonth, student: s.student, father: s.father, classSec: s.classSec, photos: []}, v));
+  });
+  if(over.length && !confirm(`These students go above the ${SESSION_LIMIT}-day limit:\n${over.join('\n')}\n\nSave for everyone anyway?`)) return;
+  $('bulkSaveBtn').disabled = true;
+  try{
+    await addOps(ops);
+    buzz();
+    toast(`✔ ${bMonth} leave saved for ${ops.length} student${ops.length === 1 ? '' : 's'}`);
+    selected.clear(); closeBulk(); renderClass();
+  }catch(e){ st('Could not save: ' + e.message, 'err'); }
+  finally{ $('bulkSaveBtn').disabled = false; }
 }
 
 /* ================= CONTACTS ================= */
@@ -1076,7 +1610,6 @@ function searchContacts(){
   $('cFilters').classList.toggle('hidden', cResults.length < 2);
   renderContacts();
 }
-// a cell may hold more than one number: "0300-1234567 / 0345 7654321"
 function splitNums(cell){ return String(cell || '').split(/[,\/;|]|\s+or\s+/i).map(s => s.trim()).filter(s => s.replace(/\D/g, '').length >= 7); }
 function waNumber(n){
   let d = String(n).replace(/\D/g, '');
@@ -1123,7 +1656,275 @@ function contactOfSelected(){
   searchContacts();
 }
 
+/* ---------- message to parents ---------- */
+function firstNumber(s){
+  for(const cell of (s.nums || [])){ const n = splitNums(cell)[0]; if(n) return n; }
+  return '';
+}
+function leaveLine(m, r){
+  const d = r.datesShort ? `, ${r.datesShort}` : '';
+  const n = String(r.leaves || '').trim();
+  return `${m}: ${r.leaveType || 'Leave'}${d}${n ? ` (${n} day${n === '1' ? '' : 's'})` : ''}`;
+}
+function parentText(s, m){
+  const recs = m ? [[m, recordOf(s.enroll, m)]] : MONTHS.map(x => [x, recordOf(s.enroll, x)]);
+  const lines = recs.filter(x => x[1]).map(x => leaveLine(x[0], x[1]));
+  if(!lines.length) return '';
+  return `Assalam o Alaikum.\n${COLLEGE}.\n\nApproved leave of *${s.student}* D/o ${s.father || '-'} (${s.classSec || '-'}, Enroll# ${s.enroll}):\n` +
+    lines.map(l => '• ' + l).join('\n') + `\n\nLeave In-Charge`;
+}
+function parentMsgFor(enroll, m, r){
+  const s = studentObj(enroll, r ? {student: r.student, father: r.father, classSec: r.classSec} : null);
+  const txt = parentText(s, m);
+  if(!txt) return toast(m ? `No ${m} leave saved for this student yet.` : 'No leave saved for this student yet.');
+  const n = firstNumber(s);
+  if(!n && !confirm('No phone number saved for this student. Open WhatsApp to choose the person yourself?')) return;
+  window.open((n ? `https://wa.me/${waNumber(n)}` : 'https://wa.me/') + '?text=' + encodeURIComponent(txt), '_blank');
+}
+function parentMsg(){
+  if(!student) return;
+  const m = month && recordOf(student.enroll, month) ? month : null;
+  parentMsgFor(student.enroll, m);
+}
+
+/* ================= REPORTS (PDF) ================= */
+function initReports(){
+  if(!$('repDate').value){
+    const t = isoOf(new Date()), m = currentMonthName(), b = monthBounds(m);
+    $('repDate').value = (t >= b.min && t <= b.max) ? t : b.min;
+  }
+  repMonth = repMonth || currentMonthName();
+  renderRepMonths(); previewDateReport();
+}
+function setRepMonth(i){ repMonth = MONTHS[i]; renderRepMonths(); }
+function renderRepMonths(){
+  $('repMonths').innerHTML = MONTHS.map((m, i) => `<button class="${m === repMonth ? 'on' : ''}" onclick="setRepMonth(${i})">${m.slice(0,3)}<span class="bd">${effectiveRows(m).length}</span></button>`).join('');
+  const rows = effectiveRows(repMonth), cur = $('repClass').value;
+  const classes = [...new Set(rows.map(r => r.classSec).filter(Boolean))].sort();
+  $('repClass').innerHTML = '<option value="">All classes</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if(classes.includes(cur)) $('repClass').value = cur;
+  previewMonthReport();
+}
+function monthOfIso(iso){ return ({9:"September",10:"October",11:"November",12:"December",1:"January"})[+iso.slice(5,7)] || null; }
+function niceDate(iso){ const d = new Date(iso + 'T00:00:00'); return d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'}); }
+function onLeaveOn(iso){
+  const m = monthOfIso(iso); if(!m) return {m: null, rows: [], undated: 0};
+  const rows = effectiveRows(m);
+  const hits = rows.filter(r => parseDates(r.datesK).some(d => d.iso === iso));
+  const undated = rows.filter(r => !parseDates(r.datesK).some(d => d.iso)).length;
+  return {m, rows: hits, undated};
+}
+function previewDateReport(){
+  const iso = $('repDate').value; if(!iso) return;
+  const r = onLeaveOn(iso);
+  $('repDatePrev').textContent = !r.m ? 'Pick a date between September and January.'
+    : `${r.rows.length} student${r.rows.length === 1 ? '' : 's'} on leave on ${niceDate(iso)}.` + (r.undated ? ` ${r.undated} leave${r.undated === 1 ? '' : 's'} this month have no dates and are not included.` : '');
+}
+function previewMonthReport(){
+  const c = $('repClass').value;
+  const rows = effectiveRows(repMonth).filter(r => !c || r.classSec === c);
+  $('repMonthPrev').textContent = `${rows.length} student${rows.length === 1 ? '' : 's'}, ${fmtNum(rows.reduce((a, r) => a + num(r.leaves), 0))} leave days.`;
+}
+function newDoc(title, sub, landscape){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({orientation: landscape ? 'landscape' : 'portrait', unit: 'mm', format: 'a4'});
+  const W = doc.internal.pageSize.getWidth();
+  doc.setFillColor(13, 37, 64); doc.rect(0, 0, W, 26, 'F');
+  doc.setTextColor(255, 184, 61); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+  doc.text(COLLEGE.toUpperCase(), 14, 10);
+  doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.text(title, 14, 19);
+  doc.setTextColor(60, 72, 88); doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  if(sub) doc.text(sub, 14, 33);
+  return doc;
+}
+function finishDoc(doc){
+  const n = doc.getNumberOfPages(), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  const stamp = new Date().toLocaleString('en-GB', {day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
+  for(let i = 1; i <= n; i++){
+    doc.setPage(i); doc.setFontSize(8); doc.setTextColor(120, 130, 145);
+    doc.text(`Generated ${stamp} by ${me.teacher || 'Leave In-Charge'}`, 14, H - 8);
+    doc.text(`Page ${i} of ${n}`, W - 14, H - 8, {align: 'right'});
+  }
+  return doc;
+}
+function table(doc, head, body, startY, extra){
+  doc.autoTable(Object.assign({
+    head: [head], body, startY: startY || 38, theme: 'grid',
+    styles: {fontSize: 9, cellPadding: 2, lineColor: [223, 230, 240], textColor: [20, 36, 58]},
+    headStyles: {fillColor: [13, 37, 64], textColor: [255, 255, 255], fontStyle: 'bold'},
+    alternateRowStyles: {fillColor: [246, 248, 252]},
+    margin: {left: 14, right: 14}
+  }, extra || {}));
+  return doc.lastAutoTable.finalY;
+}
+async function sharePdf(doc, filename, title){
+  finishDoc(doc);
+  const blob = doc.output('blob');
+  const file = new File([blob], filename, {type: 'application/pdf'});
+  try{
+    if(navigator.canShare && navigator.canShare({files: [file]})){
+      await navigator.share({files: [file], title});
+      return;
+    }
+  }catch(e){ if(e && e.name === 'AbortError') return; }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast('PDF downloaded. Share it from your Downloads.');
+}
+function pdfReady(){
+  if(window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.API.autoTable) return true;
+  toast('PDF tool is still loading. Try again in a moment.');
+  return false;
+}
+function waText(txt){ window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank'); }
+
+function dateReport(kind){
+  const iso = $('repDate').value; if(!iso) return toast('Pick a date.');
+  const r = onLeaveOn(iso);
+  if(!r.m) return toast('Pick a date between September and January.');
+  const rows = r.rows.slice().sort((a, b) => String(a.classSec).localeCompare(String(b.classSec)) || String(a.student).localeCompare(String(b.student)));
+  if(kind === 'wa'){
+    if(!rows.length) return toast('Nobody is on dated leave that day.');
+    return waText(`*Students on approved leave*\n${niceDate(iso)}\n\n` + rows.map((x, i) => `${i+1}. ${x.student} (${x.classSec}) – ${x.leaveType}`).join('\n') + `\n\nTotal: ${rows.length}\n${COLLEGE}`);
+  }
+  if(!pdfReady()) return;
+  const doc = newDoc('Students on Approved Leave', `${niceDate(iso)}  ·  ${rows.length} student${rows.length === 1 ? '' : 's'}`);
+  const y = table(doc, ['#','Enroll#','Student','Father','Class','Leave type','Leave dates'],
+    rows.length ? rows.map((x, i) => [i+1, x.enroll, x.student, x.father || '', x.classSec || '', x.leaveType || '', x.datesShort || '']) : [['', '', 'No student on dated leave this day', '', '', '', '']]);
+  if(r.undated){ doc.setFontSize(9); doc.setTextColor(120,130,145); doc.text(`${r.undated} leave(s) in ${r.m} were entered without dates and are not listed.`, 14, y + 7); }
+  sharePdf(doc, `Leaves ${iso}.pdf`, 'Students on leave');
+}
+function monthReport(kind){
+  const c = $('repClass').value;
+  const rows = effectiveRows(repMonth).filter(r => !c || r.classSec === c);
+  const days = rows.reduce((a, r) => a + num(r.leaves), 0);
+  if(kind === 'wa'){
+    if(!rows.length) return toast('No leaves for this month.');
+    const byC = {};
+    rows.forEach(r => (byC[r.classSec || '-'] = byC[r.classSec || '-'] || []).push(r));
+    const txt = `*Approved leaves – ${repMonth}${c ? ' – ' + c : ''}*\n` + Object.keys(byC).sort().map(k =>
+      `\n*${k}*\n` + byC[k].map(r => `• ${r.student}: ${r.leaveType}${r.datesShort ? ', ' + r.datesShort : ''} (${r.leaves || '-'})`).join('\n')).join('\n') +
+      `\n\nStudents: ${rows.length} · Leave days: ${fmtNum(days)}\n${COLLEGE}`;
+    return waText(txt);
+  }
+  if(!pdfReady()) return;
+  const doc = newDoc(`Approved Leaves – ${repMonth}`, `${c || 'All classes'}  ·  ${rows.length} students  ·  ${fmtNum(days)} leave days`, true);
+  const body = [];
+  let lastC = null;
+  rows.forEach(r => {
+    if(r.classSec !== lastC){ lastC = r.classSec; body.push([{content: r.classSec || '-', colSpan: 7, styles: {fillColor: [232, 247, 245], fontStyle: 'bold', textColor: [11, 125, 115]}}]); }
+    body.push([r.enroll, r.student, r.father || '', r.leaveType || '', r.datesShort || '', r.leaves || '-', r.pending ? 'waiting' : (r.teacher || '')]);
+  });
+  if(!body.length) body.push(['', 'No approved leave this month', '', '', '', '', '']);
+  table(doc, ['Enroll#','Student','Father','Leave type','Dates','Days','Entered by'], body, 38, {columnStyles: {5: {halign: 'center'}}});
+  sharePdf(doc, `Leaves ${repMonth}${c ? ' ' + c : ''}.pdf`, `Leaves ${repMonth}`);
+}
+function sessionReport(){
+  if(!pdfReady()) return;
+  const classes = [...new Set(students.map(s => s.classSec).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+  const per = {};
+  MONTHS.forEach(m => effectiveRows(m).forEach(r => {
+    const c = r.classSec || '-';
+    per[c] = per[c] || {}; per[c][m] = per[c][m] || {n: 0, d: 0};
+    per[c][m].n++; per[c][m].d += num(r.leaves);
+  }));
+  const tot = {}; MONTHS.forEach(m => tot[m] = {n: 0, d: 0});
+  const body = classes.concat(Object.keys(per).filter(c => !classes.includes(c))).filter(c => per[c]).map(c => {
+    let td = 0;
+    const cells = MONTHS.map(m => { const v = per[c][m]; if(!v) return '-'; tot[m].n += v.n; tot[m].d += v.d; td += v.d; return `${v.n} / ${fmtNum(v.d)}`; });
+    return [c].concat(cells, [fmtNum(td)]);
+  });
+  body.push([{content: 'Total', styles: {fontStyle: 'bold'}}].concat(MONTHS.map(m => ({content: `${tot[m].n} / ${fmtNum(tot[m].d)}`, styles: {fontStyle: 'bold'}})),
+    [{content: fmtNum(MONTHS.reduce((a, m) => a + tot[m].d, 0)), styles: {fontStyle: 'bold'}}]));
+  const doc = newDoc('Approved Leaves – Session Summary', 'Each cell: students on leave / leave days', true);
+  table(doc, ['Class'].concat(MONTHS, ['Total days']), body, 38, {styles: {fontSize: 9, halign: 'center', cellPadding: 2, lineColor: [223,230,240], textColor: [20,36,58]}, columnStyles: {0: {halign: 'left', fontStyle: 'bold'}}});
+  sharePdf(doc, 'Leaves session summary.pdf', 'Session summary');
+}
+function certificatePdf(){
+  if(!student) return;
+  if(!pdfReady()) return;
+  const s = student;
+  const rows = MONTHS.map(m => [m, recordOf(s.enroll, m)]).filter(x => x[1]);
+  const total = rows.reduce((a, x) => a + num(x[1].leaves), 0);
+  const doc = newDoc('Student Leave Record', `Session ${monthBounds('September').min.slice(0,4)}-${monthBounds('January').min.slice(2,4)}`);
+  doc.setFontSize(11); doc.setTextColor(20, 36, 58);
+  const info = [['Student', s.student], ['Father', s.father || '-'], ['Class-Section', s.classSec || '-'], ['Enroll#', s.enroll]];
+  let y = 42;
+  info.forEach(([k, v]) => { doc.setFont('helvetica', 'bold'); doc.text(k + ':', 14, y); doc.setFont('helvetica', 'normal'); doc.text(String(v), 50, y); y += 7; });
+  y = table(doc, ['Month','Leave type','Dates','Days'],
+    rows.length ? rows.map(([m, r]) => [m, r.leaveType || '', r.datesFull || r.datesShort || '', r.leaves || '-']) : [['No approved leave recorded', '', '', '']],
+    y + 2, {columnStyles: {3: {halign: 'center'}}, foot: [['Total approved leave days', '', '', fmtNum(total)]], footStyles: {fillColor: [232, 247, 245], textColor: [11, 125, 115], fontStyle: 'bold'}});
+  const H = doc.internal.pageSize.getHeight();
+  const sy = Math.min(y + 30, H - 30);
+  doc.setDrawColor(150); doc.line(130, sy, 196, sy);
+  doc.setFontSize(10); doc.setTextColor(60, 72, 88); doc.text('Leave In-Charge', 163, sy + 5, {align: 'center'});
+  doc.text(me.teacher || '', 163, sy + 10, {align: 'center'});
+  sharePdf(doc, `Leave record ${s.enroll}.pdf`, 'Leave record');
+}
+
+/* ================= TODAY: log + undo ================= */
+function dayOf(ts){ return isoOf(new Date(ts)); }
+function renderLogCount(){
+  const n = logs.filter(l => dayOf(l.at) === isoOf(new Date())).length;
+  $('logCount').textContent = n; $('logCount').classList.toggle('hidden', !n);
+}
+function logState(l){
+  if(!l.opId) return '<span class="pill grey">on phone only</span>';
+  const q = queue.find(o => o.id === l.opId);
+  if(q) return q.failed ? '<span class="pill bad">not saved</span>' : '<span class="pill wait">⏳ waiting</span>';
+  const newer = queue.find(o => o.enroll === l.enroll && o.month === l.month && o.at > l.at);
+  return newer ? '<span class="pill grey">replaced</span>' : '<span class="pill">in sheet</span>';
+}
+function renderLog(){
+  const day = $('logDay').value || isoOf(new Date());
+  const list = logs.map((l, i) => ({l, i})).filter(x => dayOf(x.l.at) === day).reverse();
+  $('logSum').textContent = list.length ? `${list.length} change${list.length === 1 ? '' : 's'} on ${niceDate(day)}` : '';
+  if(!list.length){ $('logList').innerHTML = `<div class="recmsg">Nothing entered on this phone on ${esc(niceDate(day))}.</div>`; return; }
+  $('logList').innerHTML = list.map(({l, i}) => `<div class="litem ${l.undone ? 'undone' : ''}">
+    <time>${clock(l.at)}</time>
+    <div><b>${esc(l.student || l.enroll)}</b> · ${esc(l.month.slice(0,3))} ${l.undoOf ? '<span class="pill grey">undo</span>' : ''}
+      <small>${esc(l.classSec || '')} · ${esc(l.text)}${l.photos ? ` · ${l.photos} photo(s)` : ''}</small>${logState(l)}</div>
+    <div class="la">
+      ${l.undone ? '<span class="pill grey">undone</span>' : `<button onclick="undoLog(${i})">Undo</button>`}
+      <button onclick="openLog(${i})">Open</button>
+    </div></div>`).join('');
+}
+function openLog(i){ const l = logs[i]; if(l) openFromAnywhere(l.enroll, l.month, {student: l.student, classSec: l.classSec}); }
+async function undoLog(i){
+  const l = logs[i]; if(!l || l.undone) return;
+  const cur = recordOf(l.enroll, l.month);
+  const s = studentObj(l.enroll, {student: l.student, classSec: l.classSec});
+  const what = l.prev ? `back to: ${l.prev.leaveType || 'Leave'}${l.prev.datesShort ? ' (' + l.prev.datesShort + ')' : ''}, ${l.prev.leaves || '-'} day(s)` : 'removed (there was no leave before)';
+  if(!confirm(`Undo this change for ${s.student || l.enroll} (${l.month})?\n\nThe ${l.month} leave will be ${what}.${l.photos ? '\nPhotos already uploaded stay in Drive.' : ''}`)) return;
+  if(l.prev){
+    const pd = parseDates(l.prev.datesK);
+    await addOps([{type: 'save', enroll: l.enroll, month: l.month, student: s.student, father: s.father, classSec: s.classSec,
+      leaves: l.prev.leaves, leaveType: l.prev.leaveType || DEFAULT_TYPE,
+      datesFull: l.prev.datesK, datesShort: l.prev.datesK ? datesShortOf(pd) : (l.prev.datesShort || ''), photos: []}], {undoOf: l.id});
+  } else if(cur){
+    await removeLeave(cur, l.month, {undoOf: l.id});
+  }
+  logs = (await kvGet('log')) || logs;
+  const li = logs.find(x => x.id === l.id); if(li) li.undone = true;
+  await kvSet('log', logs);
+  buzz(); toast('Undone.');
+  renderLog(); refreshViews();
+  if(student && student.enroll === l.enroll && month === l.month) pickMonth(month);
+}
+function logPdf(){
+  if(!pdfReady()) return;
+  const day = $('logDay').value || isoOf(new Date());
+  const list = logs.filter(l => dayOf(l.at) === day && !l.undone);
+  const doc = newDoc('Leave Entries', `${niceDate(day)}  ·  ${list.length} change${list.length === 1 ? '' : 's'}`);
+  table(doc, ['Time','Student','Class','Month','Change'], list.length ? list.map(l => [clock(l.at), l.student || l.enroll, l.classSec || '', l.month, l.text]) : [['', 'Nothing entered', '', '', '']]);
+  sharePdf(doc, `Leave entries ${day}.pdf`, 'Leave entries');
+}
+
 boot();
 </script>
+<script src="jspdf.umd.min.js" defer></script>
+<script src="jspdf.plugin.autotable.min.js" defer></script>
 </body>
 </html>
