@@ -267,6 +267,10 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(1
 .bact .x{width:40px;padding:0;color:var(--bad);font-size:20px}
 .bact .x:hover{background:var(--bad);border-color:var(--bad);color:#fff}
 .own{grid-column:1/-1;display:flex;gap:8px}
+.row.dates3>div:last-child{flex:0 0 96px}
+.own .days{flex:0 0 84px}
+.spill{margin-top:10px;display:flex;gap:10px;align-items:center;justify-content:space-between;background:#eef3fb;border:1.5px solid #c9d7ec;color:var(--navy);border-radius:12px;padding:8px 12px;font-size:13.5px;font-weight:700}
+.spill button{border:none;background:#fff;border-radius:8px;height:34px;padding:0 10px;font-weight:700;color:var(--bad)}
 .lastbox{margin-top:12px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#e8f7f5;border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--teal-d)}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;z-index:30;max-width:90vw;text-align:center;box-shadow:var(--sh)}
 
@@ -299,7 +303,7 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(1
   .brow{grid-template-columns:1fr}.bact{justify-content:flex-start}
   .bact button,.bact label{height:44px}.bact .x{width:44px}
 }
-@media(max-width:420px){.row.dates{flex-direction:column;gap:0}.top h1>span{display:none}.who .out{padding:7px 10px}.mini span{width:20px}.minihead span{width:20px}.own{flex-direction:column}}
+@media(max-width:420px){.row.dates{flex-direction:column;gap:0}.top h1>span{display:none}.who .out{padding:7px 10px}.mini span{width:20px}.minihead span{width:20px}.own{flex-wrap:wrap}.own input[type=date]{flex:1 1 140px}.row.dates3{flex-direction:row;flex-wrap:wrap;gap:0 10px}.row.dates3>div{flex:1 1 140px}.row.dates3>div:last-child{flex:0 0 96px}}
 button,input,select,a{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
@@ -400,15 +404,17 @@ button,input,select,a{touch-action:manipulation}
 
           <div class="card">
             <h2>Dates and count <span class="req">*</span></h2>
-            <p class="sub">Pick the From date (required). Leave To blank for a one-day leave. Every picked day counts.</p>
-            <div class="row dates">
+            <p class="sub">Pick the From date (required). Then either pick To, or type the number of Days and To is worked out. Leave both blank for one day. Every day counts.</p>
+            <div class="row dates dates3">
               <div><div class="lbl" style="margin-top:6px">From <span class="req">*</span></div><input id="dFrom" type="date" onchange="rangeChanged('from')"></div>
-              <div><div class="lbl" style="margin-top:6px">To (blank = one day)</div><input id="dTo" type="date" onchange="rangeChanged('to')"></div>
+              <div><div class="lbl" style="margin-top:6px">To</div><input id="dTo" type="date" onchange="rangeChanged('to')"></div>
+              <div><div class="lbl" style="margin-top:6px">or Days</div><input id="dDays" type="number" inputmode="numeric" min="1" max="60" placeholder="e.g. 10" oninput="rangeChanged('days')"></div>
             </div>
             <button class="btn alt hidden" id="moreBtn" type="button" style="margin-top:12px" onclick="newRange()">Add another range</button>
             <div class="lastbox hidden" id="lastBox"><span id="lastText"></span><button class="btn sm" type="button" onclick="useLast()">Use same</button></div>
             <div class="dchips" id="dchips"></div>
             <div class="clash hidden" id="clash"></div>
+            <div class="spill hidden" id="spill"><span id="spillText"></span><button type="button" onclick="dropSpill()">Don't add</button></div>
 
             <div class="slip">
               <div class="num" id="slipNum">0</div>
@@ -444,9 +450,10 @@ button,input,select,a{touch-action:manipulation}
       <div class="lbl">Leave type <span class="req">*</span></div>
       <div class="chips" id="batTypes" style="margin-top:0"></div>
       <div id="batOtherBox" class="other hidden"><input id="batOther" type="text" placeholder="Type the leave type" oninput="this.classList.remove('invalid-field');batchCommon()"></div>
-      <div class="row dates">
-        <div><div class="lbl">From (most students) <span class="req">*</span></div><input id="batFrom" type="date" onchange="batchCommon()"></div>
-        <div><div class="lbl">To (blank = one day)</div><input id="batTo" type="date" onchange="batchCommon()"></div>
+      <div class="row dates dates3">
+        <div><div class="lbl">From (most students) <span class="req">*</span></div><input id="batFrom" type="date" onchange="batchCommon('from')"></div>
+        <div><div class="lbl">To</div><input id="batTo" type="date" onchange="batchCommon('to')"></div>
+        <div><div class="lbl">or Days</div><input id="batDays" type="number" inputmode="numeric" min="1" max="60" placeholder="e.g. 10" oninput="batchCommon('days')"></div>
       </div>
       <div class="lbl">If a student already has a leave in that month</div>
       <div class="modes">
@@ -634,10 +641,12 @@ button,input,select,a{touch-action:manipulation}
     <div class="lbl">Leave type <span class="req">*</span></div>
     <div class="chips" id="bTypes" style="margin-top:0"></div>
     <div id="bOtherBox" class="other hidden"><input id="bOther" type="text" placeholder="Type the leave type, e.g. Sports trip"></div>
-    <div class="row dates">
-      <div><div class="lbl">From <span class="req">*</span></div><input id="bFrom" type="date" onchange="bulkDatesChanged()"></div>
-      <div><div class="lbl">To (blank = one day)</div><input id="bTo" type="date" onchange="bulkDatesChanged()"></div>
+    <div class="row dates dates3">
+      <div><div class="lbl">From <span class="req">*</span></div><input id="bFrom" type="date" onchange="bulkDatesChanged('from')"></div>
+      <div><div class="lbl">To</div><input id="bTo" type="date" onchange="bulkDatesChanged('to')"></div>
+      <div><div class="lbl">or Days</div><input id="bDays" type="number" inputmode="numeric" min="1" max="60" placeholder="e.g. 10" oninput="bulkDatesChanged('days')"></div>
     </div>
+    <div class="count" id="bDaysNote"></div>
     <div id="bNumBox" class="hidden"><input id="bNum" type="text" inputmode="decimal"></div>
     <div class="lbl">If a student already has a leave this month</div>
     <div class="modes">
@@ -1234,6 +1243,11 @@ function addIsos(list){
   sortDates(dates);
 }
 let live = [];
+let spillLive = [], spillKept = [];   // days past the end of the picked month (saved in the next month(s))
+const MAX_DAYS = 60;
+function addDays(iso, n){ const [y,m,d] = iso.split('-').map(Number); return isoOf(new Date(y, m - 1, d + n)); }
+function daysVal(id){ const n = parseInt($(id).value, 10); return n > 0 ? Math.min(n, MAX_DAYS) : 0; }
+function sessionMax(){ return monthBounds('January').max; }
 function monthBounds(m){
   const now = new Date(), start = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
   const mm = MNUM[m], y = mm === 1 ? start + 1 : start, p = String(mm).padStart(2,'0');
@@ -1242,13 +1256,25 @@ function monthBounds(m){
 function setMonthLimits(m){
   const b = monthBounds(m);
   ['dFrom','dTo'].forEach(i => { $(i).min = b.min; $(i).max = b.max; $(i).value = ''; $(i).classList.remove('invalid-field'); });
-  live = []; $('moreBtn').classList.add('hidden');
+  $('dDays').value = '';
+  live = []; spillLive = []; spillKept = []; renderSpill();
+  $('moreBtn').classList.add('hidden');
 }
 function rangeChanged(src){
   $('dFrom').classList.remove('invalid-field');
-  const f = $('dFrom'), t = $('dTo');
-  if(src === 'from' && t.value && t.value < f.value) t.value = '';
+  const f = $('dFrom'), t = $('dTo'), nd = daysVal('dDays');
+  if(src === 'to') $('dDays').value = '';
+  if(src === 'from' && t.value && t.value < f.value && !nd) t.value = '';
   t.min = f.value || f.min;
+  spillLive = [];
+  if(f.value && nd && src !== 'to'){
+    // From + number of days: work out To; days after the month end go to the next month(s)
+    const b = monthBounds(month), all = expandRange(f.value, addDays(f.value, nd - 1));
+    t.value = all.filter(i => i <= b.max).pop();
+    spillLive = all.filter(i => i > b.max && i <= sessionMax());
+    if(all.some(i => i > sessionMax())) toast('Leave after January is not counted (the session ends in January).');
+  }
+  renderSpill();
   dates = dates.filter(d => live.indexOf(d.iso) === -1);
   live = [];
   let clash = [];
@@ -1271,9 +1297,24 @@ function showClash(list){
   el.classList.remove('hidden');
 }
 function newRange(){
+  spillKept = [...new Set(spillKept.concat(spillLive))].sort(); spillLive = [];
+  $('dDays').value = '';
   live = []; $('dFrom').value = ''; $('dTo').value = ''; $('dTo').min = $('dFrom').min;
   $('moreBtn').classList.add('hidden'); $('clash').classList.add('hidden');
 }
+function allSpill(){ return [...new Set(spillKept.concat(spillLive))].sort(); }
+function spillByMonth(){
+  const by = {};
+  allSpill().forEach(iso => { const m = monthOfIso(iso); if(m && m !== month) (by[m] = by[m] || []).push({iso, label: fmtISO(iso)}); });
+  return by;
+}
+function renderSpill(){
+  const by = spillByMonth(), ms = MONTHS.filter(m => by[m]);
+  $('spill').classList.toggle('hidden', !ms.length);
+  if(!ms.length) return;
+  $('spillText').textContent = 'Also saved: ' + ms.map(m => `${datesShortOf(by[m])} in ${m} (${by[m].length} day${by[m].length === 1 ? '' : 's'})`).join('; ');
+}
+function dropSpill(){ spillLive = []; spillKept = []; renderSpill(); }
 function groupDatesOf(list){
   const groups = []; let cur = null;
   list.forEach(d => {
@@ -1427,7 +1468,18 @@ async function save(){
     return setStatus('Pick the From date of the leave.', 'err');
   }
   const leaves = String(n);
-  const after = sessionDays(student.enroll) - monthDays(student.enroll, month) + num(leaves);
+  // days that run into the next month(s) are added to that month's leave
+  const by = spillByMonth(), extra = [];
+  let change = num(leaves) - monthDays(student.enroll, month);
+  MONTHS.filter(m => by[m]).forEach(m => {
+    const prev = recordOf(student.enroll, m);
+    const v = prev ? mergeLeave(prev, {dates: by[m], leaves: String(by[m].length), leaveType: type})
+      : {leaves: String(by[m].length), leaveType: type, datesFull: datesFullOf(by[m]), datesShort: datesShortOf(by[m])};
+    change += num(v.leaves) - monthDays(student.enroll, m);
+    extra.push(Object.assign({type: 'save', enroll: student.enroll, month: m,
+      student: student.student, father: student.father, classSec: student.classSec, photos: []}, v));
+  });
+  const after = sessionDays(student.enroll) + change;
   if(after > SESSION_LIMIT && !confirm(`${student.student} will have ${fmtNum(after)} approved leave days this session, above the ${SESSION_LIMIT}-day limit.\n\nSave anyway?`)) return;
 
   $('saveBtn').disabled = true;
@@ -1438,7 +1490,9 @@ async function save(){
       leaves, leaveType: type, datesFull: datesFull(), datesShort: datesShort(),
       student: student.student, father: student.father, classSec: student.classSec,
       photos: photos.map(p => ({data: p.data}))
-    }]);
+    }].concat(extra));
+    const alsoTxt = extra.length ? ` Also saved in ${extra.map(o => o.month).join(', ')}.` : '';
+    spillLive = []; spillKept = []; renderSpill();
     photos = []; renderThumbs(); renderProofs();
     origIsos = dates.filter(d => d.iso).map(d => d.iso);
     lastEntry = {typ, other: $('lother').value.trim(), isos: origIsos.slice()};
@@ -1446,7 +1500,7 @@ async function save(){
     buzz();
     markMonths(); renderHist();
     const ph = nPhotos ? ` with ${nPhotos} photo${nPhotos > 1 ? 's' : ''}` : '';
-    setStatus(navigator.onLine ? `✔ Saved${ph}. Sending ${month} leave to the sheet…` : `✔ Saved${ph} on this phone. It will reach the sheet when you are online.`, 'ok');
+    setStatus((navigator.onLine ? `✔ Saved${ph}. Sending ${month} leave to the sheet…` : `✔ Saved${ph} on this phone. It will reach the sheet when you are online.`) + alsoTxt, 'ok');
   }catch(e){
     setStatus('Could not save on this phone: ' + e.message, 'err');
   }finally{
@@ -1489,6 +1543,7 @@ function initBatch(){
   const sb = sessionBounds();
   ['batFrom','batTo'].forEach(i => { $(i).min = sb.min; $(i).max = sb.max; });
   $('batFrom').value = batch.from || ''; $('batTo').value = batch.to || ''; $('batOther').value = batch.other || '';
+  $('batDays').value = batch.days || '';
   if(batch.from) $('batTo').min = batch.from;
   document.querySelectorAll('input[name=batmode]').forEach(r => r.checked = r.value === batch.mode);
   renderBatchTypes(); renderBatch();
@@ -1503,9 +1558,12 @@ function setBatchType(i){
   if(batch.type === 'Other') $('batOther').focus();
 }
 function batchTypeText(){ return batch.type === 'Other' ? String(batch.other || '').trim() : batch.type; }
-function batchCommon(){
-  const f = $('batFrom'), t = $('batTo');
+function batchCommon(src){
+  const f = $('batFrom'), t = $('batTo'), nd = daysVal('batDays');
+  if(src === 'to') $('batDays').value = '';
+  else if(f.value && nd) t.value = addDays(f.value, nd - 1);
   if(t.value && f.value && t.value < f.value) t.value = '';
+  batch.days = $('batDays').value;
   t.min = f.value || f.min;
   if(f.value) f.classList.remove('invalid-field');
   batch.from = f.value; batch.to = t.value; batch.other = $('batOther').value;
@@ -1600,6 +1658,7 @@ function renderBatch(){
       ${it.custom ? `<div class="own">
         <input type="date" aria-label="From" value="${esc(it.from)}" min="${sb.min}" max="${sb.max}" onchange="ownDate(${i}, 'from', this.value)">
         <input type="date" aria-label="To" value="${esc(it.to)}" min="${esc(it.from || sb.min)}" max="${sb.max}" onchange="ownDate(${i}, 'to', this.value)">
+        <input class="days" type="number" inputmode="numeric" min="1" max="60" placeholder="Days" aria-label="Number of days" value="${esc(it.days || '')}" onchange="ownDate(${i}, 'days', this.value)">
       </div>` : ''}
     </div>`;
   }).join('');
@@ -1608,12 +1667,15 @@ function renderBatch(){
 function toggleOwn(i){
   const it = batch.items[i]; if(!it) return;
   it.custom = !it.custom;
-  if(it.custom && !it.from){ it.from = batch.from; it.to = batch.to; }
+  if(it.custom && !it.from){ it.from = batch.from; it.to = batch.to; it.days = batch.days || ''; }
   keepBatch(); renderBatch();
 }
 function ownDate(i, k, v){
   const it = batch.items[i]; if(!it) return;
-  it[k] = v;
+  if(k === 'days'){ const n = parseInt(v, 10); it.days = n > 0 ? String(Math.min(n, MAX_DAYS)) : ''; }
+  else it[k] = v;
+  if(k === 'to') it.days = '';
+  if(it.from && it.days) it.to = addDays(it.from, +it.days - 1);
   if(it.from && it.to && it.to < it.from) it.to = '';
   keepBatch(); renderBatch();
 }
@@ -1910,7 +1972,8 @@ function setBulkType(i){ bTyp = TYPES.concat(['Other'])[i]; renderBulkTypes(); }
 function renderBulkMonths(){
   $('bMonths').innerHTML = MONTHS.map((m, i) => `<button class="${m === bMonth ? 'on' : ''}" onclick="setBulkMonth(${i})">${m.slice(0,3)}</button>`).join('');
   const b = monthBounds(bMonth);
-  ['bFrom','bTo'].forEach(i => { $(i).min = b.min; $(i).max = b.max; if($(i).value && ($(i).value < b.min || $(i).value > b.max)) $(i).value = ''; });
+  $('bFrom').min = b.min; $('bFrom').max = b.max; $('bTo').min = b.min; $('bTo').max = sessionMax();
+  if($('bFrom').value && ($('bFrom').value < b.min || $('bFrom').value > b.max)){ $('bFrom').value = ''; $('bTo').value = ''; }
   bulkDatesChanged();
 }
 function renderBulkTypes(){
@@ -1918,9 +1981,18 @@ function renderBulkTypes(){
     `<button class="chip ${t === bTyp ? 'on' : ''}" onclick="setBulkType(${i})">${t === 'Other' ? 'Other…' : esc(t)}</button>`).join('');
   $('bOtherBox').classList.toggle('hidden', bTyp !== 'Other');
 }
-function bulkDatesChanged(){
-  if($('bTo').value && $('bFrom').value && $('bTo').value < $('bFrom').value) $('bTo').value = '';
-  if($('bFrom').value) $('bFrom').classList.remove('invalid-field');
+function bulkDatesChanged(src){
+  const f = $('bFrom'), t = $('bTo'), nd = daysVal('bDays');
+  if(src === 'to') $('bDays').value = '';
+  else if(f.value && nd) t.value = addDays(f.value, nd - 1);
+  if(t.value && f.value && t.value < f.value) t.value = '';
+  if(t.value > sessionMax()) t.value = sessionMax();
+  t.min = f.value || f.min;
+  if(f.value) f.classList.remove('invalid-field');
+  const list = f.value ? expandRange(f.value, t.value || f.value) : [];
+  const ms = [...new Set(list.map(monthOfIso))];
+  $('bDaysNote').textContent = list.length ? `${list.length} day${list.length === 1 ? '' : 's'}: ${datesShortOf(list.map(iso => ({iso})))}` +
+    (ms.length > 1 ? ` (split into ${ms.join(' and ')})` : '') : '';
 }
 // combine an existing record with new leave (mode "add")
 function mergeLeave(prev, add){
@@ -1945,25 +2017,29 @@ async function saveBulk(){
   if(!type) return st('Type the leave type for "Other".', 'err');
   const from = $('bFrom').value, to = $('bTo').value || from;
   if(!from){ $('bFrom').classList.add('invalid-field'); $('bFrom').focus(); return st('Pick the From date.', 'err'); }
-  const nd = expandRange(from, to).map(iso => ({iso, label: fmtISO(iso)}));
+  const byM = {};
+  expandRange(from, to).forEach(iso => { const m = monthOfIso(iso); if(m) (byM[m] = byM[m] || []).push({iso, label: fmtISO(iso)}); });
   const mode = document.querySelector('input[name=bmode]:checked').value;
-  const add = {dates: nd, leaves: String(nd.length), leaveType: type};
   const list = [...selected].map(e => byEnroll[e]).filter(Boolean);
   const ops = [], over = [];
   list.forEach(s => {
-    const prev = recordOf(s.enroll, bMonth);
-    const v = (prev && mode === 'add') ? mergeLeave(prev, add)
-      : {leaves: add.leaves, leaveType: type, datesFull: datesFullOf(nd), datesShort: datesShortOf(nd)};
-    const after = sessionDays(s.enroll) - monthDays(s.enroll, bMonth) + num(v.leaves);
+    let change = 0;
+    MONTHS.filter(m => byM[m]).forEach(m => {
+      const nd = byM[m], prev = recordOf(s.enroll, m);
+      const v = (prev && mode === 'add') ? mergeLeave(prev, {dates: nd, leaves: String(nd.length), leaveType: type})
+        : {leaves: String(nd.length), leaveType: type, datesFull: datesFullOf(nd), datesShort: datesShortOf(nd)};
+      change += num(v.leaves) - monthDays(s.enroll, m);
+      ops.push(Object.assign({type: 'save', enroll: s.enroll, month: m, student: s.student, father: s.father, classSec: s.classSec, photos: []}, v));
+    });
+    const after = sessionDays(s.enroll) + change;
     if(after > SESSION_LIMIT) over.push(`${s.student} (${fmtNum(after)})`);
-    ops.push(Object.assign({type: 'save', enroll: s.enroll, month: bMonth, student: s.student, father: s.father, classSec: s.classSec, photos: []}, v));
   });
   if(over.length && !confirm(`These students go above the ${SESSION_LIMIT}-day limit:\n${over.join('\n')}\n\nSave for everyone anyway?`)) return;
   $('bulkSaveBtn').disabled = true;
   try{
     await addOps(ops);
     buzz();
-    toast(`✔ ${bMonth} leave saved for ${ops.length} student${ops.length === 1 ? '' : 's'}`);
+    toast(`✔ Leave saved for ${list.length} student${list.length === 1 ? '' : 's'}`);
     selected.clear(); closeBulk(); renderClass();
   }catch(e){ st('Could not save: ' + e.message, 'err'); }
   finally{ $('bulkSaveBtn').disabled = false; }
