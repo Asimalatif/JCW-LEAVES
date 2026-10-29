@@ -277,6 +277,22 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(1
 .secchips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
 .secchip{display:inline-flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:10px;background:#eef3fb;color:var(--navy);font-size:13.5px;font-weight:700}
 .secchip button{width:28px;height:28px;border-radius:8px;border:none;background:#fff;color:var(--bad);font-weight:800;padding:0}
+.sgroup{border:1.5px solid var(--line);border-radius:14px;margin-top:12px;overflow:hidden;background:#fff}
+.shead{display:flex;align-items:center;gap:10px;width:100%;background:#f6f8fc;border:none;padding:12px 14px;text-align:left;font:inherit;color:inherit;min-height:56px}
+.shead b{font:800 17px 'Bricolage Grotesque',sans-serif;color:var(--navy)}
+.shead small{display:block;color:var(--muted);font-size:12.5px;font-weight:600}
+.shead .arr{margin-left:auto;font-size:18px;color:var(--muted);transition:transform .15s}
+.sgroup.open .shead .arr{transform:rotate(180deg)}
+.soff{padding:0 14px 10px;background:#f6f8fc;font-size:12.5px;font-weight:700;color:var(--bad)}
+.sacts{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--line)}
+.srow{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+.srow input[type=checkbox]{width:24px;height:24px;accent-color:var(--teal);margin:0}
+.srow .nm{background:none;border:none;padding:0;text-align:left;font:inherit;color:inherit;min-width:0}
+.srow .nm b{display:block;color:var(--navy);font-weight:700}
+.srow .nm small{display:block;color:var(--muted);font-size:12.5px}
+.srow .nm small.dl{color:var(--teal-d);font-weight:700}.srow .nm small.warn{color:var(--wait);font-weight:700}
+.srow.off{background:#fff5f6}.srow.off .nm b{text-decoration:line-through;color:var(--muted)}
+.srow .own{grid-column:1/-1}
 .lastbox{margin-top:12px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#e8f7f5;border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--teal-d)}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;z-index:30;max-width:90vw;text-align:center;box-shadow:var(--sh)}
 
@@ -307,6 +323,7 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(1
   .rgrid{grid-template-columns:1fr}
   .litem{grid-template-columns:46px minmax(0,1fr)}.litem .la{grid-column:2;justify-content:flex-start}
   .brow{grid-template-columns:1fr}.bact{justify-content:flex-start}
+  .srow{grid-template-columns:30px minmax(0,1fr)}.srow .bact{grid-column:2}.srow .bact:empty{display:none}
   .bact button,.bact label{height:44px}.bact .x{width:44px}
 }
 @media(max-width:420px){.row.dates{flex-direction:column;gap:0}.top h1>span{display:none}.who .out{padding:7px 10px}.mini span{width:20px}.minihead span{width:20px}.own{flex-wrap:wrap}.own input[type=date]{flex:1 1 140px}.row.dates3{flex-direction:row;flex-wrap:wrap;gap:0 10px}.row.dates3>div{flex:1 1 140px}.row.dates3>div:last-child{flex:0 0 96px}}
@@ -470,7 +487,7 @@ button,input,select,a{touch-action:manipulation}
 
     <div class="card">
       <h2>Add students</h2>
-      <p class="sub">Type her name (add the father name if many match), then tap the right student to add her. If she is already in the batch (e.g. her whole section was added but she is not on leave), tapping her removes her.</p>
+      <p class="sub">Type her name (add the father name if many match), then tap the right student to add her. If she is already in the batch, tapping her switches her between "on leave" and "not on leave".</p>
       <input id="batQ" type="search" placeholder="Student name, e.g. Ayesha Khan" oninput="debounce(batchSearch)" onkeydown="batchKey(event)" enterkeyhint="go">
       <div id="batRes" class="bres"></div>
       <div class="lbl" style="margin-top:18px">Or add a whole section</div>
@@ -488,8 +505,8 @@ button,input,select,a{touch-action:manipulation}
 
     <div class="card">
       <div class="rechead">
-        <div><h2>In this batch</h2><p class="sub">Tap "Own dates" for a student whose exam days are different. 📷 adds a photo of her application.</p></div>
-        <button class="btn alt sm" onclick="clearBatch()">Clear</button>
+        <div><h2>In this batch</h2><p class="sub">Each section is a card. <b>Ticked = on leave.</b> Untick a student who is NOT on leave; she stays in the list in red and is skipped when you save. Tap a section name to open or close it. "Own dates" is for a student whose days are different; 📷 adds her application photo.</p></div>
+        <button class="btn alt sm" onclick="clearBatch()">Empty batch</button>
       </div>
       <div class="recsum" id="batSum"></div>
       <div class="secchips" id="batSecs"></div>
@@ -1574,18 +1591,13 @@ function addSection(){
   if(!list.length) return toast('No students in ' + c + '.');
   let added = 0;
   list.forEach(s => { if(addToBatch(s.enroll, true)) added++; });
+  openSecs.add(c);
   const already = list.length - added;
   keepBatch(); renderBatch(); buzz();
   $('batSecMsg').innerHTML = added
-    ? `<span class="ok">✔ ${added} student${added === 1 ? '' : 's'} of ${esc(c)} added.</span>${already ? ` ${already} were already in the batch.` : ''} Pick another section to add more.`
+    ? `<span class="ok">✔ ${added} student${added === 1 ? '' : 's'} of ${esc(c)} added, all ticked as on leave.</span>${already ? ` ${already} were already in the batch.` : ''} Untick anyone who is not on leave, or pick another section.`
     : `All ${list.length} students of ${esc(c)} are already in the batch.`;
   $('batSec').value = '';
-}
-function removeSection(c){
-  const n = batch.items.filter(it => ((byEnroll[it.enroll] || {}).classSec || '-') === c).length;
-  if(!n || !confirm(`Remove all ${n} student${n === 1 ? '' : 's'} of ${c} from this batch?`)) return;
-  batch.items = batch.items.filter(it => ((byEnroll[it.enroll] || {}).classSec || '-') !== c);
-  keepBatch(); renderBatch();
 }
 function renderBatchTypes(){
   $('batTypes').innerHTML = TYPES.concat(['Other']).map((t, i) =>
@@ -1619,10 +1631,12 @@ function batchSearch(){
   const all = byEnroll[q] ? 1 : findStudents(q, true).length;
   const head = bRes.length ? `<div class="count">${all > bRes.length ? `Showing ${bRes.length} of ${all}. Type more of the name or the father name.` : `${all} match${all === 1 ? '' : 'es'}. Tap the right student.`}</div>` : '';
   $('batRes').innerHTML = bRes.length ? head + bRes.map((s, i) => {
-    const inB = batch.items.some(x => x.enroll === s.enroll);
-    return `<button class="item" onclick="addBatchIdx(${i})"${inB ? ' style="background:#fff5f6;border-color:#f0b4b9"' : ''}><span class="av">${esc(initials(s.student))}</span>
-      <span><b>${esc(s.student)}</b><small>D/o ${esc(s.father || '-')} · ${esc(s.classSec || '-')} · #${esc(s.enroll)}</small></span>
-      ${inB ? '<span class="pill bad" style="margin-left:auto;white-space:nowrap">in batch · tap to remove</span>' : ''}</button>`;
+    const it = batch.items.find(x => x.enroll === s.enroll);
+    const tag = !it ? '' : it.off
+      ? '<span class="pill bad" style="margin-left:auto;white-space:nowrap">not on leave · tap to put on leave</span>'
+      : '<span class="pill" style="margin-left:auto;white-space:nowrap">on leave · tap if NOT on leave</span>';
+    return `<button class="item" onclick="addBatchIdx(${i})"><span class="av">${esc(initials(s.student))}</span>
+      <span><b>${esc(s.student)}</b><small>D/o ${esc(s.father || '-')} · ${esc(s.classSec || '-')} · #${esc(s.enroll)}</small></span>${tag}</button>`;
   }).join('') : '<div class="count">No students found. Try another spelling or the enrollment number.</div>';
 }
 function batchKey(e){
@@ -1636,17 +1650,18 @@ function batchKey(e){
 }
 function addBatchIdx(i){
   const s = bRes[i]; if(!s) return;
-  const k = batch.items.findIndex(x => x.enroll === s.enroll);
-  if(k < 0) return addToBatch(s.enroll);
-  // already in the batch: tapping takes her out (e.g. a student of a whole section who is not on leave)
-  batch.items.splice(k, 1);
-  buzz(); toast(`${s.student} removed from the batch`);
+  const it = batch.items.find(x => x.enroll === s.enroll);
+  if(!it) return addToBatch(s.enroll);
+  // already in the batch: tapping switches her between "on leave" and "not on leave"
+  it.off = !it.off;
+  openSecs.add(s.classSec || '-');
+  buzz(); toast(it.off ? `${s.student}: NOT on leave (will be skipped)` : `${s.student}: on leave`);
   $('batQ').value = ''; bRes = []; $('batRes').innerHTML = ''; $('batQ').focus();
   keepBatch(); renderBatch();
 }
 function addToBatch(enroll, quiet){
   if(batch.items.some(x => x.enroll === enroll)){ if(!quiet) toast('Already in the batch.'); return false; }
-  batch.items.push({enroll, custom: false, from: '', to: '', photos: []});
+  batch.items.push({enroll, custom: false, from: '', to: '', photos: [], off: false});
   if(!quiet){
     const s = byEnroll[enroll];
     buzz(); toast(`✔ ${s ? s.student : enroll} added`);
@@ -1670,55 +1685,99 @@ function pasteBatch(){
   $('batPaste').value = missing.join('\n');
 }
 
-/* --- the list --- */
+/* --- the list: grouped by section, tick = on leave --- */
+let openSecs = new Set();          // sections opened on screen
 function itemRange(it){ return it.custom ? {from: it.from, to: it.to || it.from} : {from: batch.from, to: batch.to || batch.from}; }
 function itemIsos(it){ const r = itemRange(it); return r.from ? expandRange(r.from, r.to) : []; }
+function secOf(it){ return (byEnroll[it.enroll] || {}).classSec || '-'; }
+function onItems(){ return batch.items.filter(it => !it.off); }
 function renderBatch(){
-  const n = batch.items.length;
-  $('batCount').textContent = n; $('batCount').classList.toggle('hidden', !n);
-  $('batbarText').textContent = n ? `${n} student${n === 1 ? '' : 's'} ready · ${batchTypeText() || 'no type'}` : '';
+  const n = batch.items.length, on = onItems().length, off = n - on;
+  $('batCount').textContent = on; $('batCount').classList.toggle('hidden', !on);
+  $('batbarText').textContent = n ? `${on} on leave${off ? ` · ${off} skipped` : ''} · ${batchTypeText() || 'no type'}` : '';
   if(view !== 'batch'){ syncSavebar(); return; }
-  const own = batch.items.filter(x => x.custom).length;
-  $('batSum').textContent = n ? `${n} student${n === 1 ? '' : 's'}` + (own ? ` · ${own} with own dates` : '') : '';
+  $('batSecs').innerHTML = '';
   if(!n){
-    $('batSecs').innerHTML = '';
-    $('batList').innerHTML = '<div class="recmsg">No students yet. Search above and add them one by one, or paste enrollment numbers.</div>';
+    $('batSum').textContent = '';
+    $('batList').innerHTML = '<div class="recmsg">No students yet. Add a whole section, or search students by name above.</div>';
     syncSavebar(); return;
   }
-  const per = {};
-  batch.items.forEach(it => { const c = (byEnroll[it.enroll] || {}).classSec || '-'; per[c] = (per[c] || 0) + 1; });
-  const secs = Object.keys(per).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+  // group by section
+  const groups = {};
+  batch.items.forEach((it, i) => { const c = secOf(it); (groups[c] = groups[c] || []).push(i); });
+  const secs = Object.keys(groups).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
   batSecList = secs;
-  $('batSecs').innerHTML = secs.length > 1 || (secs.length === 1 && per[secs[0]] > 3)
-    ? secs.map(c => `<span class="secchip">${esc(c)} · ${per[c]}<button type="button" onclick="removeSection(batSecList[${secs.indexOf(c)}])" aria-label="Remove ${esc(c)} from the batch">×</button></span>`).join('') : '';
-  const recMap = allRecordsMap();
-  const sb = sessionBounds();
-  $('batList').innerHTML = batch.items.map((it, i) => {
-    const s = byEnroll[it.enroll] || {student: it.enroll, father: '', classSec: ''};
-    const isos = itemIsos(it);
-    const ms = [...new Set(isos.map(monthOfIso).filter(Boolean))];
-    const had = ms.filter(m => recMap[it.enroll] && recMap[it.enroll][m]).map(m => m.slice(0,3));
-    const dl = isos.length
-      ? esc(`${it.custom ? 'Own dates: ' : ''}${datesShortOf(isos.map(iso => ({iso})))} · ${isos.length} day${isos.length === 1 ? '' : 's'}`)
-      : '<span class="err">No dates yet</span>';
-    const r = itemRange(it);
-    return `<div class="brow">
-      <div><b>${esc(s.student)}</b><small>D/o ${esc(s.father || '-')} · ${esc(s.classSec || '-')} · #${esc(it.enroll)}</small>
-        <small class="dl">${dl}</small>
-        ${had.length ? `<small class="warn">Already has leave in ${esc(had.join(', '))}: it will be ${batch.mode === 'add' ? 'added to' : 'replaced'}.</small>` : ''}</div>
-      <div class="bact">
-        <button type="button" onclick="toggleOwn(${i})">${it.custom ? 'Same dates' : 'Own dates'}</button>
-        <label title="Photo of the application">📷${it.photos.length ? ' ' + it.photos.length : ''}<input type="file" accept="image/*" capture="environment" onchange="batchPhoto(${i}, this)"></label>
-        <button type="button" class="x" onclick="removeBatch(${i})" aria-label="Remove ${esc(s.student)} from the batch">×</button>
-      </div>
-      ${it.custom ? `<div class="own">
-        <input type="date" aria-label="From" value="${esc(it.from)}" min="${sb.min}" max="${sb.max}" onchange="ownDate(${i}, 'from', this.value)">
-        <input type="date" aria-label="To" value="${esc(it.to)}" min="${esc(it.from || sb.min)}" max="${sb.max}" onchange="ownDate(${i}, 'to', this.value)">
-        <input class="days" type="number" inputmode="numeric" min="1" max="60" placeholder="Days" aria-label="Number of days" value="${esc(it.days || '')}" onchange="ownDate(${i}, 'days', this.value)">
-      </div>` : ''}
-    </div>`;
+  $('batSum').textContent = `${on} student${on === 1 ? '' : 's'} on leave` + (off ? ` · ${off} not on leave (will be skipped)` : '') +
+    ` · ${secs.length} section${secs.length === 1 ? '' : 's'}`;
+  const recMap = allRecordsMap(), sb = sessionBounds();
+  const nm = i => (byEnroll[batch.items[i].enroll] || {}).student || batch.items[i].enroll;
+
+  $('batList').innerHTML = secs.map((c, si) => {
+    const idx = groups[c].slice().sort((a, b) => String(nm(a)).localeCompare(String(nm(b))));
+    const offIdx = idx.filter(i => batch.items[i].off);
+    const total = students.filter(s => s.classSec === c).length;
+    const isOpen = openSecs.has(c) || idx.length <= 3;
+    const head = `<button type="button" class="shead" onclick="toggleSec(${si})" aria-expanded="${isOpen}">
+        <span><b>${esc(c)}</b><small>${idx.length - offIdx.length} on leave${offIdx.length ? ` · <span class="err">${offIdx.length} not on leave</span>` : ''}${total ? ` · ${idx.length} of ${total} in this section added` : ''}</small></span>
+        <span class="arr">▾</span></button>` +
+      (offIdx.length ? `<div class="soff">Not on leave: ${esc(offIdx.map(nm).join(', '))}</div>` : '');
+    if(!isOpen) return `<div class="sgroup">${head}</div>`;
+    const rows = idx.map(i => {
+      const it = batch.items[i], s = byEnroll[it.enroll] || {student: it.enroll, father: ''};
+      const isos = itemIsos(it);
+      const ms = [...new Set(isos.map(monthOfIso).filter(Boolean))];
+      const had = ms.filter(m => recMap[it.enroll] && recMap[it.enroll][m]).map(m => m.slice(0,3));
+      const dl = isos.length
+        ? esc(`${it.custom ? 'Own dates: ' : ''}${datesShortOf(isos.map(iso => ({iso})))} · ${isos.length} day${isos.length === 1 ? '' : 's'}`)
+        : '<span class="err">No dates yet</span>';
+      return `<div class="srow ${it.off ? 'off' : ''}">
+        <input type="checkbox" ${it.off ? '' : 'checked'} onchange="setOn(${i}, this.checked)" aria-label="${esc(s.student)} is on leave">
+        <button type="button" class="nm" onclick="setOn(${i}, ${it.off ? 'true' : 'false'})">
+          <b>${esc(s.student)}</b><small>D/o ${esc(s.father || '-')} · #${esc(it.enroll)}</small>
+          ${it.off ? '<small class="err">Not on leave · will be skipped</small>' : `<small class="dl">${dl}</small>`}
+          ${!it.off && had.length ? `<small class="warn">Already has leave in ${esc(had.join(', '))}: ${batch.mode === 'add' ? 'will be added to it' : 'will be replaced'}.</small>` : ''}
+        </button>
+        <div class="bact">${it.off ? '' : `
+          <button type="button" onclick="toggleOwn(${i})">${it.custom ? 'Same dates' : 'Own dates'}</button>
+          <label title="Photo of the application">📷${it.photos.length ? ' ' + it.photos.length : ''}<input type="file" accept="image/*" capture="environment" onchange="batchPhoto(${i}, this)"></label>`}
+        </div>
+        ${it.custom && !it.off ? `<div class="own">
+          <input type="date" aria-label="From" value="${esc(it.from)}" min="${sb.min}" max="${sb.max}" onchange="ownDate(${i}, 'from', this.value)">
+          <input type="date" aria-label="To" value="${esc(it.to)}" min="${esc(it.from || sb.min)}" max="${sb.max}" onchange="ownDate(${i}, 'to', this.value)">
+          <input class="days" type="number" inputmode="numeric" min="1" max="60" placeholder="Days" aria-label="Number of days" value="${esc(it.days || '')}" onchange="ownDate(${i}, 'days', this.value)">
+        </div>` : ''}
+      </div>`;
+    }).join('');
+    const acts = `<div class="sacts">
+        <button class="btn alt sm" type="button" onclick="secAll(${si}, true)">Tick all</button>
+        <button class="btn alt sm" type="button" onclick="secAll(${si}, false)">Untick all</button>
+        <button class="btn alt sm" type="button" style="color:var(--bad)" onclick="removeSection(batSecList[${si}])">Remove section</button>
+      </div>`;
+    return `<div class="sgroup open">${head}${acts}${rows}</div>`;
   }).join('');
   syncSavebar();
+}
+function toggleSec(si){
+  const c = batSecList[si]; if(c == null) return;
+  if(openSecs.has(c)) openSecs.delete(c); else openSecs.add(c);
+  renderBatch();
+}
+function setOn(i, on){
+  const it = batch.items[i]; if(!it) return;
+  it.off = !on; buzz();
+  keepBatch(); renderBatch();
+}
+function secAll(si, on){
+  const c = batSecList[si];
+  batch.items.forEach(it => { if(secOf(it) === c) it.off = !on; });
+  keepBatch(); renderBatch();
+}
+function removeSection(c){
+  const n = batch.items.filter(it => secOf(it) === c).length;
+  if(!n || !confirm(`Take all ${n} student${n === 1 ? '' : 's'} of ${c} out of this batch?`)) return;
+  batch.items = batch.items.filter(it => secOf(it) !== c);
+  openSecs.delete(c);
+  keepBatch(); renderBatch();
 }
 function toggleOwn(i){
   const it = batch.items[i]; if(!it) return;
@@ -1735,11 +1794,6 @@ function ownDate(i, k, v){
   if(it.from && it.to && it.to < it.from) it.to = '';
   keepBatch(); renderBatch();
 }
-function removeBatch(i){
-  batch.items.splice(i, 1);
-  keepBatch(); renderBatch();
-  if($('batQ').value.trim()) batchSearch();
-}
 async function batchPhoto(i, input){
   const it = batch.items[i], f = input.files && input.files[0];
   input.value = '';
@@ -1750,28 +1804,29 @@ async function batchPhoto(i, input){
 }
 async function clearBatch(){
   const n = batch.items.length; if(!n) return;
-  if(!confirm(`Remove all ${n} student${n === 1 ? '' : 's'} from this batch?\nNothing has been saved for them yet.`)) return;
-  batch.items = []; await keepBatch(); renderBatch();
+  if(!confirm(`Empty this batch (${n} student${n === 1 ? '' : 's'})?\nNothing has been saved for them yet.`)) return;
+  batch.items = []; openSecs.clear(); await keepBatch(); renderBatch();
 }
 
 /* --- save all --- */
 async function saveBatch(){
   const type = batchTypeText();
   if(!type){ $('batOther').classList.add('invalid-field'); $('batOther').focus(); return toast('Type the leave type for "Other".'); }
-  if(!batch.items.length) return;
+  const items = onItems(), skipped = batch.items.length - items.length;
+  if(!items.length) return toast('Nobody is ticked as on leave.');
   const sb = sessionBounds(), name = it => (byEnroll[it.enroll] || {}).student || it.enroll;
-  const noDates = batch.items.filter(it => !itemIsos(it).length).map(name);
+  const noDates = items.filter(it => !itemIsos(it).length).map(name);
   if(noDates.length){
     if(!batch.from){ $('batFrom').classList.add('invalid-field'); window.scrollTo({top: 0}); }
     return toast(`Pick the From date for: ${noDates.slice(0, 3).join(', ')}${noDates.length > 3 ? ` and ${noDates.length - 3} more` : ''}`);
   }
-  const outside = batch.items.filter(it => itemIsos(it).some(x => x < sb.min || x > sb.max)).map(name);
+  const outside = items.filter(it => itemIsos(it).some(x => x < sb.min || x > sb.max)).map(name);
   if(outside.length) return toast(`Dates must be between September and January: ${outside.slice(0, 3).join(', ')}`);
-  const missing = batch.items.filter(it => !byEnroll[it.enroll]).map(it => it.enroll);
-  if(missing.length) return toast(`Not in the student list: ${missing.join(', ')}. Remove them or download the latest list.`);
+  const missing = items.filter(it => !byEnroll[it.enroll]).map(it => it.enroll);
+  if(missing.length) return toast(`Not in the student list: ${missing.join(', ')}. Untick them or download the latest list.`);
 
   const ops = [], over = [];
-  batch.items.forEach(it => {
+  items.forEach(it => {
     const s = byEnroll[it.enroll];
     const byM = {};
     itemIsos(it).forEach(iso => { const m = monthOfIso(iso); (byM[m] = byM[m] || []).push({iso, label: fmtISO(iso)}); });
@@ -1789,8 +1844,9 @@ async function saveBatch(){
     const after = sessionDays(s.enroll) + change;
     if(after > SESSION_LIMIT) over.push(`${s.student} (${fmtNum(after)})`);
   });
-  const n = batch.items.length;
+  const n = items.length;
   let msg = `Save ${type} for ${n} student${n === 1 ? '' : 's'}?`;
+  if(skipped) msg += `\n${skipped} unticked student${skipped === 1 ? ' is' : 's are'} NOT on leave and will be skipped.`;
   if(over.length) msg += `\n\nAbove the ${SESSION_LIMIT}-day limit:\n${over.slice(0, 10).join('\n')}${over.length > 10 ? `\n…and ${over.length - 10} more` : ''}`;
   if(!confirm(msg)) return;
 
@@ -1799,7 +1855,7 @@ async function saveBatch(){
     await addOps(ops);
     buzz();
     toast(`✔ Saved for ${n} student${n === 1 ? '' : 's'}. ${navigator.onLine ? 'Sending to the sheets…' : 'Will send when online.'}`);
-    batch.items = [];
+    batch.items = []; openSecs.clear();
     await keepBatch();
     renderBatch();
   }catch(e){
