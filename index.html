@@ -482,11 +482,25 @@ button,input,select,a{touch-action:manipulation}
           <button class="btn wa sm" onclick="monthReport('wa')">WhatsApp text</button>
         </div>
       </div>
-      <div class="card">
-        <h2>Session summary</h2>
-        <p class="sub">Students on leave and leave days per class for September to January. Good for the Principal.</p>
+      <div class="card" style="grid-column:1/-1">
+        <h2>Session reports</h2>
+        <p class="sub">September to January together. Pick a report and a class.</p>
+        <div class="recfilters">
+          <select id="sesKind" onchange="previewSession()">
+            <option value="student">Student-wise: each student, leave days month by month</option>
+            <option value="class">Class-wise: every leave of every student, class by class</option>
+            <option value="month">Month-wise: every leave, month by month and class by class</option>
+            <option value="classsum">Class totals: students and leave days per class</option>
+            <option value="over">Above the leave limit</option>
+            <option value="types">Leave types: how many of each type</option>
+            <option value="check">Data check: entries that need fixing</option>
+          </select>
+          <select id="sesClass" onchange="previewSession()"></select>
+        </div>
+        <div class="rpreview" id="sesPrev"></div>
         <div class="racts">
-          <button class="btn sm" onclick="sessionReport()">PDF</button>
+          <button class="btn sm" onclick="sessionReport('pdf')">PDF</button>
+          <button class="btn wa sm" onclick="sessionReport('wa')">WhatsApp text</button>
         </div>
       </div>
       <div class="card">
@@ -1708,7 +1722,7 @@ function initReports(){
     $('repDate').value = (t >= b.min && t <= b.max) ? t : b.min;
   }
   repMonth = repMonth || currentMonthName();
-  renderRepMonths(); previewDateReport();
+  renderRepMonths(); previewDateReport(); initSession();
 }
 function setRepMonth(i){ repMonth = MONTHS[i]; renderRepMonths(); }
 function renderRepMonths(){
@@ -1860,26 +1874,243 @@ function monthReport(kind){
   table(doc, ['Enroll#','Student','Father','Leave type','Dates','Days','Entered by'], body, 38, {columnStyles: {5: {halign: 'center'}}});
   sharePdf(doc, `Leaves ${repMonth}${c ? ' ' + c : ''}.pdf`, `Leaves ${repMonth}`);
 }
-function sessionReport(){
-  if(!pdfReady()) return;
-  const classes = [...new Set(students.map(s => s.classSec).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
-  const per = {};
-  MONTHS.forEach(m => effectiveRows(m).forEach(r => {
-    const c = r.classSec || '-';
-    per[c] = per[c] || {}; per[c][m] = per[c][m] || {n: 0, d: 0};
-    per[c][m].n++; per[c][m].d += num(r.leaves);
-  }));
-  const tot = {}; MONTHS.forEach(m => tot[m] = {n: 0, d: 0});
-  const body = classes.concat(Object.keys(per).filter(c => !classes.includes(c))).filter(c => per[c]).map(c => {
-    let td = 0;
-    const cells = MONTHS.map(m => { const v = per[c][m]; if(!v) return '-'; tot[m].n += v.n; tot[m].d += v.d; td += v.d; return `${v.n} / ${fmtNum(v.d)}`; });
-    return [c].concat(cells, [fmtNum(td)]);
+/* ---------- SESSION REPORTS (September to January together) ---------- */
+const RED = {textColor: [198, 47, 58], fontStyle: 'bold'};
+const BOLD = {fontStyle: 'bold'};
+const G_MAIN = {fillColor: [22, 56, 92], textColor: [255, 255, 255], fontStyle: 'bold'};
+const G_SUB = {fillColor: [232, 247, 245], textColor: [11, 125, 115], fontStyle: 'bold'};
+const cmpCls = (a, b) => String(a).localeCompare(String(b), undefined, {numeric: true});
+function sessionYears(){ return `${monthBounds('September').min.slice(0,4)}-${monthBounds('January').min.slice(2,4)}`; }
+// days of one month's record: "-" no leave, "?" leave saved without a number
+function cellDays(r){
+  if(!r) return '-';
+  const v = String(r.leaves == null ? '' : r.leaves).trim();
+  return v === '' ? '?' : fmtNum(num(v));
+}
+function sesClasses(){
+  const set = new Set();
+  MONTHS.forEach(m => effectiveRows(m).forEach(r => { if(r.classSec) set.add(r.classSec); }));
+  return [...set].sort(cmpCls);
+}
+function initSession(){
+  const cur = $('sesClass').value, cl = sesClasses();
+  $('sesClass').innerHTML = '<option value="">All classes</option>' + cl.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if(cl.includes(cur)) $('sesClass').value = cur;
+  const o = $('sesKind').querySelector('option[value=over]');
+  if(o) o.textContent = `Above the ${SESSION_LIMIT}-day limit: students who took too many leaves`;
+  previewSession();
+}
+// every student with at least one leave this session
+function sessionStudents(cls){
+  const map = allRecordsMap();
+  return Object.keys(map).map(e => {
+    const rec = map[e], any = rec[MONTHS.find(m => rec[m])];
+    const s = byEnroll[e] || {enroll: e, student: any.student, father: any.father, classSec: any.classSec};
+    const tot = MONTHS.reduce((a, m) => a + (rec[m] ? num(rec[m].leaves) : 0), 0);
+    return {e, s, rec, tot, cls: s.classSec || any.classSec || '-'};
+  }).filter(x => !cls || x.cls === cls)
+    .sort((a, b) => cmpCls(a.cls, b.cls) || String(a.s.student).localeCompare(String(b.s.student)));
+}
+
+// 1. Student-wise: one row per student, days per month + total
+function repStudent(cls){
+  const list = sessionStudents(cls), body = [], mSum = MONTHS.map(() => 0);
+  let last = null, days = 0, over = 0;
+  list.forEach(x => {
+    if(x.cls !== last){ last = x.cls; body.push({group: x.cls}); }
+    MONTHS.forEach((m, k) => { if(x.rec[m]) mSum[k] += num(x.rec[m].leaves); });
+    const hot = x.tot > SESSION_LIMIT; if(hot) over++; days += x.tot;
+    const types = [...new Set(MONTHS.map(m => x.rec[m] && x.rec[m].leaveType).filter(Boolean))].join(', ');
+    body.push({
+      cells: [x.e, x.s.student, x.s.father || '', ...MONTHS.map(m => cellDays(x.rec[m])), {content: fmtNum(x.tot), styles: hot ? RED : BOLD}, types],
+      wa: `• ${x.s.student}: ` + MONTHS.filter(m => x.rec[m]).map(m => `${m.slice(0,3)} ${cellDays(x.rec[m])}`).join(', ') + ` = *${fmtNum(x.tot)}*${hot ? ' ⚠' : ''}`
+    });
   });
-  body.push([{content: 'Total', styles: {fontStyle: 'bold'}}].concat(MONTHS.map(m => ({content: `${tot[m].n} / ${fmtNum(tot[m].d)}`, styles: {fontStyle: 'bold'}})),
-    [{content: fmtNum(MONTHS.reduce((a, m) => a + tot[m].d, 0)), styles: {fontStyle: 'bold'}}]));
-  const doc = newDoc('Approved Leaves – Session Summary', 'Each cell: students on leave / leave days', true);
-  table(doc, ['Class'].concat(MONTHS, ['Total days']), body, 38, {styles: {fontSize: 9, halign: 'center', cellPadding: 2, lineColor: [223,230,240], textColor: [20,36,58]}, columnStyles: {0: {halign: 'left', fontStyle: 'bold'}}});
-  sharePdf(doc, 'Leaves session summary.pdf', 'Session summary');
+  return {
+    sub: `${list.length} students on leave · ${fmtNum(days)} leave days · ${over} above ${SESSION_LIMIT} days`,
+    head: ['Enroll#', 'Student', 'Father', ...MONTHS.map(m => m.slice(0,3)), 'Total', 'Leave types'],
+    body, center: [3,4,5,6,7,8],
+    foot: ['', 'Total', '', ...mSum.map(fmtNum), fmtNum(days), ''],
+    note: `"-" = no leave that month. "?" = leave saved without a number of days. Red total = above ${SESSION_LIMIT} days.`
+  };
+}
+
+// 2. Class-wise detail: every leave of every student, grouped by class
+function repClassDetail(cls){
+  const list = sessionStudents(cls), body = [];
+  let last = null, days = 0, entries = 0;
+  list.forEach(x => {
+    if(x.cls !== last){
+      last = x.cls;
+      const inCls = list.filter(y => y.cls === x.cls);
+      body.push({group: `${x.cls}  ·  ${inCls.length} students  ·  ${fmtNum(inCls.reduce((a, y) => a + y.tot, 0))} days`});
+    }
+    const ms = MONTHS.filter(m => x.rec[m]);
+    entries += ms.length; days += x.tot;
+    ms.forEach((m, k) => {
+      const r = x.rec[m];
+      body.push({cells: [k ? '' : x.e, k ? '' : x.s.student, m, r.leaveType || '', r.datesShort || '', cellDays(r)],
+        wa: k ? null : `• ${x.s.student}: ` + ms.map(mm => `${mm.slice(0,3)} ${x.rec[mm].leaveType || 'Leave'}${x.rec[mm].datesShort ? ' (' + x.rec[mm].datesShort + ')' : ''} ${cellDays(x.rec[mm])}`).join('; ') + ` = *${fmtNum(x.tot)}*`});
+    });
+    if(ms.length > 1) body.push({cells: ['', '', {content: 'Total', styles: BOLD}, '', '', {content: fmtNum(x.tot), styles: x.tot > SESSION_LIMIT ? RED : BOLD}]});
+  });
+  return {sub: `${list.length} students · ${entries} leave entries · ${fmtNum(days)} leave days`,
+    head: ['Enroll#', 'Student', 'Month', 'Leave type', 'Dates', 'Days'], body, center: [5]};
+}
+
+// 3. Month-wise detail: the month report for every month in one PDF
+function repMonthDetail(cls){
+  const body = []; let days = 0, entries = 0;
+  MONTHS.forEach(m => {
+    const rows = effectiveRows(m).filter(r => !cls || r.classSec === cls);
+    if(!rows.length) return;
+    const d = rows.reduce((a, r) => a + num(r.leaves), 0);
+    days += d; entries += rows.length;
+    body.push({group: `${m.toUpperCase()}  ·  ${rows.length} students  ·  ${fmtNum(d)} days`, main: true});
+    let lc = null;
+    rows.forEach(r => {
+      if(r.classSec !== lc){ lc = r.classSec; body.push({group: r.classSec || '-'}); }
+      body.push({cells: [r.enroll, r.student, r.father || '', r.leaveType || '', r.datesShort || '', cellDays(r), r.pending ? 'waiting' : (r.teacher || '')],
+        wa: `• ${r.student}: ${r.leaveType || 'Leave'}${r.datesShort ? ', ' + r.datesShort : ''} (${cellDays(r)})`});
+    });
+  });
+  return {sub: `${entries} leave entries · ${fmtNum(days)} leave days`,
+    head: ['Enroll#', 'Student', 'Father', 'Leave type', 'Dates', 'Days', 'Entered by'], body, center: [5]};
+}
+
+// 4. Class totals: one row per class
+function repClassTotals(cls){
+  const list = sessionStudents(cls);
+  const classes = [...new Set(list.map(x => x.cls))].sort(cmpCls);
+  const body = [], mSum = MONTHS.map(() => 0);
+  let sumStu = 0, sumOn = 0, sumDays = 0;
+  classes.forEach(c => {
+    const inCls = list.filter(x => x.cls === c);
+    const strength = students.filter(s => s.classSec === c).length;
+    const per = MONTHS.map((m, k) => {
+      const rs = inCls.filter(x => x.rec[m]);
+      if(!rs.length) return '-';
+      const d = rs.reduce((a, x) => a + num(x.rec[m].leaves), 0);
+      mSum[k] += d;
+      return `${fmtNum(d)} (${rs.length})`;
+    });
+    const tot = inCls.reduce((a, x) => a + x.tot, 0);
+    sumStu += strength; sumOn += inCls.length; sumDays += tot;
+    body.push({cells: [{content: c, styles: BOLD}, strength || '', inCls.length, ...per, {content: fmtNum(tot), styles: BOLD}, inCls.length ? fmtNum(tot / inCls.length) : '-'],
+      wa: `• ${c}: ${inCls.length} students on leave, ${fmtNum(tot)} days`});
+  });
+  return {sub: `${classes.length} classes · ${sumOn} students on leave · ${fmtNum(sumDays)} leave days`,
+    head: ['Class', 'Strength', 'On leave', ...MONTHS.map(m => m.slice(0,3)), 'Total days', 'Avg days'],
+    body, center: [1,2,3,4,5,6,7,8,9],
+    foot: ['Total', sumStu || '', sumOn, ...mSum.map(fmtNum), fmtNum(sumDays), sumOn ? fmtNum(sumDays / sumOn) : '-'],
+    note: 'Month cells: leave days (students on leave). Strength = students in the class list. Avg days = total days / students on leave.'};
+}
+
+// 5. Above the limit
+function repOver(cls){
+  const list = sessionStudents(cls).filter(x => x.tot > SESSION_LIMIT).sort((a, b) => b.tot - a.tot);
+  const body = list.map(x => ({
+    cells: [x.e, x.s.student, x.s.father || '', x.cls, ...MONTHS.map(m => cellDays(x.rec[m])), {content: fmtNum(x.tot), styles: RED}],
+    wa: `• ${x.s.student} (${x.cls}): *${fmtNum(x.tot)} days*`
+  }));
+  return {sub: `${list.length} student${list.length === 1 ? '' : 's'} above ${SESSION_LIMIT} approved leave days`,
+    head: ['Enroll#', 'Student', 'Father', 'Class', ...MONTHS.map(m => m.slice(0,3)), 'Total'], body, center: [4,5,6,7,8,9]};
+}
+
+// 6. Leave types
+function repTypes(cls){
+  const agg = {};
+  MONTHS.forEach((m, k) => effectiveRows(m).filter(r => !cls || r.classSec === cls).forEach(r => {
+    const t = String(r.leaveType || 'Not given').trim();
+    const a = agg[t] = agg[t] || {n: 0, stu: new Set(), d: 0, per: MONTHS.map(() => 0)};
+    a.n++; a.stu.add(r.enroll); a.d += num(r.leaves); a.per[k] += num(r.leaves);
+  }));
+  const keys = Object.keys(agg).sort((a, b) => agg[b].d - agg[a].d);
+  let n = 0, d = 0;
+  const body = keys.map(t => {
+    const a = agg[t]; n += a.n; d += a.d;
+    return {cells: [{content: t, styles: BOLD}, a.n, a.stu.size, ...a.per.map(v => v ? fmtNum(v) : '-'), {content: fmtNum(a.d), styles: BOLD}],
+      wa: `• ${t}: ${a.n} entries, ${fmtNum(a.d)} days`};
+  });
+  return {sub: `${keys.length} leave types · ${n} entries · ${fmtNum(d)} days`,
+    head: ['Leave type', 'Entries', 'Students', ...MONTHS.map(m => m.slice(0,3)), 'Total days'], body, center: [1,2,3,4,5,6,7,8],
+    foot: ['Total', n, '', ...MONTHS.map((m, k) => fmtNum(keys.reduce((a, t) => a + agg[t].per[k], 0))), fmtNum(d)],
+    note: 'Month cells are leave days.'};
+}
+
+// 7. Data check: entries that need fixing
+function repCheck(cls){
+  const items = [];
+  MONTHS.forEach(m => effectiveRows(m).filter(r => !cls || r.classSec === cls).forEach(r => {
+    const probs = [];
+    const isos = parseDates(r.datesK).filter(x => x.iso).length;
+    if(String(r.leaves == null ? '' : r.leaves).trim() === '') probs.push([1, 'No number of days']);
+    else if(isos && isos !== num(r.leaves)) probs.push([2, `Days (${r.leaves}) do not match dates (${isos})`]);
+    if(r.pending) probs.push([3, 'Not yet in the sheet']);
+    if(!isos) probs.push([4, 'No dates (not in the "on leave on a date" report)']);
+    probs.forEach(p => items.push({p, r, m}));
+  }));
+  items.sort((a, b) => a.p[0] - b.p[0] || cmpCls(a.r.classSec, b.r.classSec) || String(a.r.student).localeCompare(String(b.r.student)));
+  const body = []; let lastP = null;
+  items.forEach(({p, r, m}) => {
+    if(p[0] !== lastP){ lastP = p[0]; body.push({group: p[0] === 2 ? 'Days do not match dates' : p[1], main: true}); }
+    body.push({cells: [r.enroll, r.student, r.classSec || '', m, `${r.leaveType || ''}${r.datesShort ? ' (' + r.datesShort + ')' : ''}`, cellDays(r), p[1]],
+      wa: `• ${r.student} (${r.classSec}) ${m.slice(0,3)}: ${p[1]}`});
+  });
+  const serious = items.filter(x => x.p[0] < 4).length;
+  return {sub: items.length ? `${serious} to fix · ${items.length - serious} without dates` : 'Nothing to fix. All entries look fine.',
+    head: ['Enroll#', 'Student', 'Class', 'Month', 'Leave', 'Days', 'Problem'], body, center: [5]};
+}
+
+const SES_REPORTS = {
+  student:  {title: 'Student-wise Leave Summary', fn: repStudent},
+  class:    {title: 'Class-wise Leave Detail', fn: repClassDetail},
+  month:    {title: 'Month-wise Leave Detail', fn: repMonthDetail},
+  classsum: {title: 'Class Totals', fn: repClassTotals},
+  over:     {title: 'Students Above the Leave Limit', fn: repOver},
+  types:    {title: 'Leave Types', fn: repTypes},
+  check:    {title: 'Leave Data Check', fn: repCheck}
+};
+function sessionBuild(){
+  const k = $('sesKind').value, cls = $('sesClass').value, def = SES_REPORTS[k];
+  const r = def.fn(cls);
+  r.title = def.title; r.cls = cls;
+  return r;
+}
+function previewSession(){
+  try{ $('sesPrev').textContent = sessionBuild().sub; }catch(e){ $('sesPrev').textContent = ''; }
+}
+function sendWa(txt){
+  if(txt.length <= 3500) return waText(txt);
+  // too long for a WhatsApp link: copy it, then open WhatsApp to paste
+  const go = () => { toast('Report copied. Paste it in the WhatsApp chat.'); setTimeout(() => window.open('https://wa.me/', '_blank'), 700); };
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(go, () => waText(txt));
+  else waText(txt);
+}
+function sessionReport(kind){
+  const r = sessionBuild();
+  const place = r.cls || 'All classes';
+  if(kind === 'wa'){
+    if(!r.body.some(b => b.cells)) return toast('Nothing to report.');
+    const lines = r.body.map(b => b.group ? (b.main ? `\n*${b.group}*` : `\n_${b.group}_`) : b.wa).filter(x => x);
+    return sendWa(`*${r.title}*\nSession ${sessionYears()} · ${place}\n${r.sub}\n${lines.join('\n')}\n\n${COLLEGE}`);
+  }
+  if(!pdfReady()) return;
+  const n = r.head.length;
+  const body = r.body.map(b => b.group ? [{content: b.group, colSpan: n, styles: b.main ? G_MAIN : G_SUB}] : b.cells);
+  if(!body.length) body.push([{content: 'Nothing to report.', colSpan: n, styles: {halign: 'center'}}]);
+  const cs = {}; (r.center || []).forEach(i => cs[i] = {halign: 'center'});
+  const doc = newDoc(r.title, `Session ${sessionYears()}  ·  ${place}  ·  ${r.sub}`, true);
+  const extra = {columnStyles: cs};
+  if(r.foot) Object.assign(extra, {foot: [r.foot], showFoot: 'lastPage', footStyles: {fillColor: [13, 37, 64], textColor: [255, 184, 61], fontStyle: 'bold'}});
+  const y = table(doc, r.head, body, 38, extra);
+  if(r.note){
+    const H = doc.internal.pageSize.getHeight();
+    if(y + 8 > H - 14) doc.addPage();
+    doc.setFontSize(8.5); doc.setTextColor(120, 130, 145);
+    doc.text(r.note, 14, y + 8 > H - 14 ? 20 : y + 7);
+  }
+  sharePdf(doc, `${r.title} ${sessionYears()}${r.cls ? ' ' + r.cls : ''}.pdf`, r.title);
 }
 function certificatePdf(){
   if(!student) return;
