@@ -3,7 +3,7 @@
    - sends saved leaves in the background when internet returns */
 importScripts('sync.js');
 
-const CACHE = 'jcw-leaves-v7';          // change the number when you upload new files
+const CACHE = 'jcw-leaves-v8';          // change the number when you upload new files
 const SHELL = ['./', './index.html', './sync.js', './manifest.json', './icon-192.png', './icon-512.png',
                './jspdf.umd.min.js', './jspdf.plugin.autotable.min.js'];
 
