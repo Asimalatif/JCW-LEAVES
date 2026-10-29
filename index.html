@@ -470,7 +470,7 @@ button,input,select,a{touch-action:manipulation}
 
     <div class="card">
       <h2>Add students</h2>
-      <p class="sub">Type her name (add the father name if many match), then tap the right student to add her. The box clears and stays ready for the next application.</p>
+      <p class="sub">Type her name (add the father name if many match), then tap the right student to add her. If she is already in the batch (e.g. her whole section was added but she is not on leave), tapping her removes her.</p>
       <input id="batQ" type="search" placeholder="Student name, e.g. Ayesha Khan" oninput="debounce(batchSearch)" onkeydown="batchKey(event)" enterkeyhint="go">
       <div id="batRes" class="bres"></div>
       <div class="lbl" style="margin-top:18px">Or add a whole section</div>
@@ -1620,9 +1620,9 @@ function batchSearch(){
   const head = bRes.length ? `<div class="count">${all > bRes.length ? `Showing ${bRes.length} of ${all}. Type more of the name or the father name.` : `${all} match${all === 1 ? '' : 'es'}. Tap the right student.`}</div>` : '';
   $('batRes').innerHTML = bRes.length ? head + bRes.map((s, i) => {
     const inB = batch.items.some(x => x.enroll === s.enroll);
-    return `<button class="item" onclick="addBatchIdx(${i})" ${inB ? 'disabled' : ''}><span class="av">${esc(initials(s.student))}</span>
+    return `<button class="item" onclick="addBatchIdx(${i})"${inB ? ' style="background:#fff5f6;border-color:#f0b4b9"' : ''}><span class="av">${esc(initials(s.student))}</span>
       <span><b>${esc(s.student)}</b><small>D/o ${esc(s.father || '-')} · ${esc(s.classSec || '-')} · #${esc(s.enroll)}</small></span>
-      ${inB ? '<span class="pill grey" style="margin-left:auto">added</span>' : ''}</button>`;
+      ${inB ? '<span class="pill bad" style="margin-left:auto;white-space:nowrap">in batch · tap to remove</span>' : ''}</button>`;
   }).join('') : '<div class="count">No students found. Try another spelling or the enrollment number.</div>';
 }
 function batchKey(e){
@@ -1634,7 +1634,16 @@ function batchKey(e){
   else if(free.length === 1 && bRes.length > 1) toast('More than one match. Tap the right student.');
   else if(bRes.length > 1) toast('More than one match. Tap the right student.');
 }
-function addBatchIdx(i){ const s = bRes[i]; if(s) addToBatch(s.enroll); }
+function addBatchIdx(i){
+  const s = bRes[i]; if(!s) return;
+  const k = batch.items.findIndex(x => x.enroll === s.enroll);
+  if(k < 0) return addToBatch(s.enroll);
+  // already in the batch: tapping takes her out (e.g. a student of a whole section who is not on leave)
+  batch.items.splice(k, 1);
+  buzz(); toast(`${s.student} removed from the batch`);
+  $('batQ').value = ''; bRes = []; $('batRes').innerHTML = ''; $('batQ').focus();
+  keepBatch(); renderBatch();
+}
 function addToBatch(enroll, quiet){
   if(batch.items.some(x => x.enroll === enroll)){ if(!quiet) toast('Already in the batch.'); return false; }
   batch.items.push({enroll, custom: false, from: '', to: '', photos: []});
